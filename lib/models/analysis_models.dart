@@ -40,6 +40,74 @@ class PrimerPairResult {
   });
 }
 
+/// ---------------- LAMP Primer Design ----------------
+/// A single functional piece of a LAMP primer set (F3, B3, the F2/F1c
+/// components that together form FIP, the B1c/B2 components that together
+/// form BIP, or an optional loop primer LF/LB).
+///
+/// [templateStart]/[templateEnd] are always expressed as coordinates on the
+/// *input template strand* (5'->3', the "sense" strand the user provided),
+/// regardless of whether [sequence] itself is used as-is or as a reverse
+/// complement in the reaction — this keeps the amplicon-map diagram simple.
+class LampPrimerPiece {
+  final String role; // F3, F2, F1c, B1c, B2, B3, LF, LB
+  final String sequence; // actual 5'->3' oligo sequence for this piece
+  final int templateStart;
+  final int templateEnd; // exclusive
+  final double gcContent;
+  final double meltingTemp;
+
+  LampPrimerPiece({
+    required this.role,
+    required this.sequence,
+    required this.templateStart,
+    required this.templateEnd,
+    required this.gcContent,
+    required this.meltingTemp,
+  });
+
+  int get length => sequence.length;
+}
+
+/// A complete candidate LAMP primer set: 2 outer primers (F3/B3), 2 composite
+/// inner primers (FIP = F1c+F2, BIP = B1c+B2), and optional loop primers
+/// (LF/LB) that speed up the reaction when template spacing allows them.
+class LampPrimerSet {
+  final LampPrimerPiece f3;
+  final LampPrimerPiece f2;
+  final LampPrimerPiece f1c;
+  final LampPrimerPiece b1c;
+  final LampPrimerPiece b2;
+  final LampPrimerPiece b3;
+  final LampPrimerPiece? lf;
+  final LampPrimerPiece? lb;
+  final String fip; // 5'-F1c-F2-3'
+  final String bip; // 5'-B1c-B2-3'
+  final int totalSpan; // F3 start -> B3 end, on the template
+  final int ampliconCoreSize; // gap between the F1 and B1 regions
+  final double score; // overall heuristic quality, 0-100
+  final List<String> notes;
+
+  LampPrimerSet({
+    required this.f3,
+    required this.f2,
+    required this.f1c,
+    required this.b1c,
+    required this.b2,
+    required this.b3,
+    this.lf,
+    this.lb,
+    required this.fip,
+    required this.bip,
+    required this.totalSpan,
+    required this.ampliconCoreSize,
+    required this.score,
+    this.notes = const [],
+  });
+
+  bool get hasLoopPrimers => lf != null && lb != null;
+}
+
 /// ---------------- Alignment ----------------
 enum AlignmentMode { global, local }
 

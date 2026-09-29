@@ -125,7 +125,7 @@ class HomeScreen extends StatelessWidget {
     [
       _ModuleEntry(
         title: 'Primer Design',
-        subtitle: 'Tm, GC%, hairpin & dimer checks',
+        subtitle: 'PCR pairs & LAMP (F3/FIP/BIP/B3, loop primers)',
         icon: Icons.biotech_rounded,
         gradient: AppColors.gradPrimer,
         builder: (_) => const PrimerDesignScreen(),
