@@ -34,6 +34,9 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
   int _gapOpenPenalty = -8;
   int _gapExtendPenalty = -1;
   bool _autoBand = true;
+  int _seedLength = 11;
+  int _extendWindow = 32;
+  int _refinementIterations = 6;
 
   PairwiseAlignmentResult? _pairwise;
   MultipleAlignmentResult? _msa;
@@ -49,6 +52,9 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
     gapOpenPenalty: _gapOpenPenalty,
     gapExtendPenalty: _gapExtendPenalty,
     autoBand: _autoBand,
+    seedLength: _seedLength,
+    extendWindow: _extendWindow,
+    refinementIterations: _refinementIterations,
   );
 
   /// Detects protein sequences among the current selection and switches the
@@ -133,6 +139,7 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
               ['Gaps (bases)', '${p.gaps}'],
               ['Gap openings', '${p.gapOpenings}'],
               ['Aligned length', '${p.alignedSeqA.length}'],
+              if (p.seedHits > 0) ['Exact seed hits found', '${p.seedHits}'],
               [
                 'Computed in',
                 p.banded
@@ -147,6 +154,8 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
                 '${_usedNames.isNotEmpty ? _usedNames[0] : "Seq A"}:\n${p.alignedSeqA}\n\n'
                 '${_usedNames.length > 1 ? _usedNames[1] : "Seq B"}:\n${p.alignedSeqB}',
           ),
+          if (p.notes.isNotEmpty)
+            ReportSection(title: 'Notes', bodyText: p.notes.join('\n\n')),
           ReportSection(
             title: 'Detected Variants (${variants.length})',
             table: [
@@ -180,6 +189,8 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
                 '${m.averageIdentity.toStringAsFixed(2)}%',
               ],
               ['Computed in', '${m.elapsedMs.toStringAsFixed(1)} ms'],
+              if (m.method.supportsRefinement)
+                ['Refinement passes accepted', '${m.refinementPasses}'],
             ],
           ),
           ReportSection(
@@ -193,10 +204,47 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
             title: 'Consensus Sequence',
             bodyText: m.consensusSequence,
           ),
+          if (m.notes.isNotEmpty)
+            ReportSection(title: 'Notes', bodyText: m.notes.join('\n\n')),
         ],
       );
     }
     return ReportData(title: 'Alignment Report');
+  }
+
+  IconData _modeIcon(AlignmentMode m) {
+    switch (m) {
+      case AlignmentMode.global:
+        return Icons.compare_arrows;
+      case AlignmentMode.local:
+        return Icons.center_focus_strong;
+      case AlignmentMode.glocal:
+        return Icons.open_in_full;
+      case AlignmentMode.heuristicSeedExtend:
+        return Icons.bolt;
+    }
+  }
+
+  String _msaShortLabel(MsaMethod m) {
+    switch (m) {
+      case MsaMethod.centerStar:
+        return 'Fast';
+      case MsaMethod.guideTree:
+        return 'Accurate (guide-tree)';
+      case MsaMethod.muscle:
+        return 'MUSCLE-style';
+    }
+  }
+
+  IconData _msaIcon(MsaMethod m) {
+    switch (m) {
+      case MsaMethod.centerStar:
+        return Icons.speed;
+      case MsaMethod.guideTree:
+        return Icons.account_tree;
+      case MsaMethod.muscle:
+        return Icons.auto_awesome;
+    }
   }
 
   @override
@@ -238,26 +286,17 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
             ),
             const SizedBox(height: 8),
-            SegmentedButton<AlignmentMode>(
-              segments: const [
-                ButtonSegment(
-                  value: AlignmentMode.global,
-                  label: Text('Global (NW)'),
-                  icon: Icon(Icons.compare_arrows),
-                ),
-                ButtonSegment(
-                  value: AlignmentMode.local,
-                  label: Text('Local (SW)'),
-                  icon: Icon(Icons.center_focus_strong),
-                ),
-                ButtonSegment(
-                  value: AlignmentMode.glocal,
-                  label: Text('Semi-global'),
-                  icon: Icon(Icons.open_in_full),
-                ),
-              ],
-              selected: {_mode},
-              onSelectionChanged: (v) => setState(() => _mode = v.first),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: AlignmentMode.values.map((m) {
+                return ChoiceChip(
+                  label: Text(m.shortLabel),
+                  avatar: Icon(_modeIcon(m), size: 16),
+                  selected: _mode == m,
+                  onSelected: (_) => setState(() => _mode = m),
+                );
+              }).toList(),
             ),
             const SizedBox(height: 6),
             Text(
@@ -271,21 +310,17 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
             ),
             const SizedBox(height: 8),
-            SegmentedButton<MsaMethod>(
-              segments: const [
-                ButtonSegment(
-                  value: MsaMethod.centerStar,
-                  label: Text('Fast'),
-                  icon: Icon(Icons.speed),
-                ),
-                ButtonSegment(
-                  value: MsaMethod.guideTree,
-                  label: Text('Accurate (guide-tree)'),
-                  icon: Icon(Icons.account_tree),
-                ),
-              ],
-              selected: {_msaMethod},
-              onSelectionChanged: (v) => setState(() => _msaMethod = v.first),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: MsaMethod.values.map((m) {
+                return ChoiceChip(
+                  label: Text(_msaShortLabel(m)),
+                  avatar: Icon(_msaIcon(m), size: 16),
+                  selected: _msaMethod == m,
+                  onSelected: (_) => setState(() => _msaMethod = m),
+                );
+              }).toList(),
             ),
             const SizedBox(height: 6),
             Text(
@@ -306,6 +341,14 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
             gapExtendPenalty: _gapExtendPenalty,
             autoBand: _autoBand,
             isProteinSelection: isProteinSelection,
+            showSeedOptions:
+                _selectedIds.length == 2 &&
+                _mode == AlignmentMode.heuristicSeedExtend,
+            seedLength: _seedLength,
+            extendWindow: _extendWindow,
+            showRefinementOptions:
+                _selectedIds.length >= 3 && _msaMethod == MsaMethod.muscle,
+            refinementIterations: _refinementIterations,
             onMatrixChanged: (v) => setState(() => _matrixType = v),
             onGapModelChanged: (v) => setState(() => _gapModel = v),
             onMatchScoreChanged: (v) => setState(() => _matchScore = v),
@@ -314,6 +357,10 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
             onGapOpenChanged: (v) => setState(() => _gapOpenPenalty = v),
             onGapExtendChanged: (v) => setState(() => _gapExtendPenalty = v),
             onAutoBandChanged: (v) => setState(() => _autoBand = v),
+            onSeedLengthChanged: (v) => setState(() => _seedLength = v),
+            onExtendWindowChanged: (v) => setState(() => _extendWindow = v),
+            onRefinementIterationsChanged: (v) =>
+                setState(() => _refinementIterations = v),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -355,6 +402,11 @@ class _AdvancedOptionsPanel extends StatelessWidget {
   final int gapExtendPenalty;
   final bool autoBand;
   final bool isProteinSelection;
+  final bool showSeedOptions;
+  final int seedLength;
+  final int extendWindow;
+  final bool showRefinementOptions;
+  final int refinementIterations;
   final ValueChanged<SubstitutionMatrixType> onMatrixChanged;
   final ValueChanged<GapModel> onGapModelChanged;
   final ValueChanged<int> onMatchScoreChanged;
@@ -363,6 +415,9 @@ class _AdvancedOptionsPanel extends StatelessWidget {
   final ValueChanged<int> onGapOpenChanged;
   final ValueChanged<int> onGapExtendChanged;
   final ValueChanged<bool> onAutoBandChanged;
+  final ValueChanged<int> onSeedLengthChanged;
+  final ValueChanged<int> onExtendWindowChanged;
+  final ValueChanged<int> onRefinementIterationsChanged;
 
   const _AdvancedOptionsPanel({
     required this.expanded,
@@ -376,6 +431,11 @@ class _AdvancedOptionsPanel extends StatelessWidget {
     required this.gapExtendPenalty,
     required this.autoBand,
     required this.isProteinSelection,
+    this.showSeedOptions = false,
+    this.seedLength = 11,
+    this.extendWindow = 32,
+    this.showRefinementOptions = false,
+    this.refinementIterations = 6,
     required this.onMatrixChanged,
     required this.onGapModelChanged,
     required this.onMatchScoreChanged,
@@ -384,6 +444,9 @@ class _AdvancedOptionsPanel extends StatelessWidget {
     required this.onGapOpenChanged,
     required this.onGapExtendChanged,
     required this.onAutoBandChanged,
+    required this.onSeedLengthChanged,
+    required this.onExtendWindowChanged,
+    required this.onRefinementIterationsChanged,
   });
 
   List<SubstitutionMatrixType> get _availableMatrices => isProteinSelection
@@ -555,6 +618,74 @@ class _AdvancedOptionsPanel extends StatelessWidget {
                     value: autoBand,
                     onChanged: onAutoBandChanged,
                   ),
+                  if (showSeedOptions) ...[
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Seed & extend heuristic settings',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12.5,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _NumberField(
+                            label: 'Seed (k-mer) length',
+                            value: seedLength,
+                            onChanged: onSeedLengthChanged,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _NumberField(
+                            label: 'Extend window (bp)',
+                            value: extendWindow,
+                            onChanged: onExtendWindowChanged,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Shorter seeds find more (but less specific) hits; a '
+                      'larger extend window aligns more context around each '
+                      'seed at the cost of speed.',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                  if (showRefinementOptions) ...[
+                    const SizedBox(height: 16),
+                    const Text(
+                      'MUSCLE-style refinement',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12.5,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    _NumberField(
+                      label: 'Max refinement passes',
+                      value: refinementIterations,
+                      onChanged: onRefinementIterationsChanged,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Each pass randomly splits the alignment in two, '
+                      're-aligns the two profiles, and keeps the result only '
+                      'if it scores better. More passes can improve accuracy '
+                      'further at extra computation cost; 0 disables '
+                      'refinement (pure profile-progressive alignment).',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -642,8 +773,36 @@ class _PairwiseResultView extends StatelessWidget {
                 _tag(result.matrixType.label),
                 _tag(result.gapModel.label),
                 if (result.banded) _tag('Banded (fast path)'),
+                if (result.seedHits > 0) _tag('${result.seedHits} seed hits'),
               ],
             ),
+            if (result.notes.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              ...result.notes.map(
+                (n) => Container(
+                  margin: const EdgeInsets.only(bottom: 6),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF8E1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: Color(0xFFEF6C00),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(n, style: const TextStyle(fontSize: 11.5)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             Text(
               names.isNotEmpty ? names[0] : 'Sequence A',
@@ -717,9 +876,37 @@ class _MsaResultView extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.w700),
             ),
             Text(
-              'Computed in ${result.elapsedMs.toStringAsFixed(1)} ms',
+              'Computed in ${result.elapsedMs.toStringAsFixed(1)} ms'
+              '${result.method.supportsRefinement ? ' · ${result.refinementPasses} refinement pass${result.refinementPasses == 1 ? '' : 'es'} accepted' : ''}',
               style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
             ),
+            if (result.notes.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              ...result.notes.map(
+                (n) => Container(
+                  margin: const EdgeInsets.only(bottom: 6),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF8E1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: Color(0xFFEF6C00),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(n, style: const TextStyle(fontSize: 11.5)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
             ...List.generate(
               result.names.length,

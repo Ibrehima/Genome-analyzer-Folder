@@ -111,7 +111,7 @@ class LampPrimerSet {
 /// ---------------- Alignment ----------------
 
 /// Overall alignment strategy.
-enum AlignmentMode { global, local, glocal }
+enum AlignmentMode { global, local, glocal, heuristicSeedExtend }
 
 extension AlignmentModeLabel on AlignmentMode {
   String get label {
@@ -122,6 +122,8 @@ extension AlignmentModeLabel on AlignmentMode {
         return 'Local (Smith-Waterman)';
       case AlignmentMode.glocal:
         return 'Semi-global (fit / overlap)';
+      case AlignmentMode.heuristicSeedExtend:
+        return 'BLAST-like (seed & extend)';
     }
   }
 
@@ -133,6 +135,8 @@ extension AlignmentModeLabel on AlignmentMode {
         return 'Local (SW)';
       case AlignmentMode.glocal:
         return 'Semi-global';
+      case AlignmentMode.heuristicSeedExtend:
+        return 'Seed & extend';
     }
   }
 
@@ -145,6 +149,11 @@ extension AlignmentModeLabel on AlignmentMode {
       case AlignmentMode.glocal:
         return 'Fits sequence B fully inside sequence A, without penalizing '
             'A\'s overhanging ends (e.g. primer/read vs. reference).';
+      case AlignmentMode.heuristicSeedExtend:
+        return 'BLAST-inspired heuristic: locates matching exact-k-mer seeds '
+            'first, then aligns only the surrounding window. Much faster on '
+            'very long sequences (e.g. whole chromosomes/long reads); may '
+            'miss highly divergent regions with no exact seed.';
     }
   }
 }
@@ -191,7 +200,7 @@ extension SubstitutionMatrixLabel on SubstitutionMatrixType {
 }
 
 /// Multiple-sequence-alignment construction method.
-enum MsaMethod { centerStar, guideTree }
+enum MsaMethod { centerStar, guideTree, muscle }
 
 extension MsaMethodLabel on MsaMethod {
   String get label {
@@ -200,6 +209,8 @@ extension MsaMethodLabel on MsaMethod {
         return 'Fast (center-sequence heuristic)';
       case MsaMethod.guideTree:
         return 'Accurate (UPGMA guide-tree, progressive)';
+      case MsaMethod.muscle:
+        return 'MUSCLE-style (progressive + iterative refinement)';
     }
   }
 
@@ -213,8 +224,17 @@ extension MsaMethodLabel on MsaMethod {
             'progressively merges the closest sequences/profiles first '
             '(ClustalW-style). More accurate, still fast via k-mer '
             'pre-clustering.';
+      case MsaMethod.muscle:
+        return 'MUSCLE-inspired (Edgar, 2004): true log-expectation '
+            'profile-vs-profile progressive alignment on the UPGMA guide '
+            'tree, followed by iterative tree-dependent refinement passes '
+            '(split the alignment, re-profile-align the two halves, keep '
+            'the result only if it improves the overall score). The most '
+            'accurate option, at extra computational cost.';
     }
   }
+
+  bool get supportsRefinement => this == MsaMethod.muscle;
 }
 
 /// Full scoring/algorithm configuration shared by pairwise & multiple
@@ -231,6 +251,10 @@ class AlignmentOptions {
   final bool autoBand; // auto-engage banded DP for long, near-equal pairs
   final int bandWidth;
   final int bandLengthThreshold; // min sequence length before banding kicks in
+  final int seedLength; // seed-and-extend heuristic: exact-match seed size
+  final int
+  extendWindow; // seed-and-extend heuristic: flank re-aligned around each seed
+  final int refinementIterations; // MUSCLE-style MSA: max refinement passes
 
   const AlignmentOptions({
     this.matrixType = SubstitutionMatrixType.simple,
@@ -244,6 +268,9 @@ class AlignmentOptions {
     this.autoBand = true,
     this.bandWidth = 64,
     this.bandLengthThreshold = 800,
+    this.seedLength = 11,
+    this.extendWindow = 32,
+    this.refinementIterations = 6,
   });
 
   AlignmentOptions copyWith({
@@ -258,6 +285,9 @@ class AlignmentOptions {
     bool? autoBand,
     int? bandWidth,
     int? bandLengthThreshold,
+    int? seedLength,
+    int? extendWindow,
+    int? refinementIterations,
   }) {
     return AlignmentOptions(
       matrixType: matrixType ?? this.matrixType,
@@ -271,6 +301,9 @@ class AlignmentOptions {
       autoBand: autoBand ?? this.autoBand,
       bandWidth: bandWidth ?? this.bandWidth,
       bandLengthThreshold: bandLengthThreshold ?? this.bandLengthThreshold,
+      seedLength: seedLength ?? this.seedLength,
+      extendWindow: extendWindow ?? this.extendWindow,
+      refinementIterations: refinementIterations ?? this.refinementIterations,
     );
   }
 }
@@ -288,6 +321,8 @@ class PairwiseAlignmentResult {
   final GapModel gapModel;
   final bool banded;
   final int elapsedMicros;
+  final int seedHits; // seed-and-extend mode only: number of exact seeds found
+  final List<String> notes;
 
   PairwiseAlignmentResult({
     required this.alignedSeqA,
@@ -302,6 +337,8 @@ class PairwiseAlignmentResult {
     this.gapModel = GapModel.linear,
     this.banded = false,
     this.elapsedMicros = 0,
+    this.seedHits = 0,
+    this.notes = const [],
   });
 
   double get elapsedMs => elapsedMicros / 1000.0;
@@ -316,6 +353,8 @@ class MultipleAlignmentResult {
   final MsaMethod method;
   final int elapsedMicros;
   final List<int> guideOrder;
+  final int refinementPasses; // MUSCLE-style: accepted improving passes
+  final List<String> notes;
 
   MultipleAlignmentResult({
     required this.names,
@@ -326,6 +365,8 @@ class MultipleAlignmentResult {
     this.method = MsaMethod.centerStar,
     this.elapsedMicros = 0,
     this.guideOrder = const [],
+    this.refinementPasses = 0,
+    this.notes = const [],
   });
 
   double get elapsedMs => elapsedMicros / 1000.0;

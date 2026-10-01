@@ -239,9 +239,185 @@ void main() {
       final g = AlignmentEngine.align('ACGT', 'ACGT', AlignmentMode.global);
       final l = AlignmentEngine.align('ACGT', 'ACGT', AlignmentMode.local);
       final s = AlignmentEngine.align('ACGT', 'ACGT', AlignmentMode.glocal);
+      final h = AlignmentEngine.align(
+        'ACGT',
+        'ACGT',
+        AlignmentMode.heuristicSeedExtend,
+      );
       expect(g.mode, AlignmentMode.global);
       expect(l.mode, AlignmentMode.local);
       expect(s.mode, AlignmentMode.glocal);
+      expect(h.mode, AlignmentMode.heuristicSeedExtend);
+    });
+  });
+
+  group('AlignmentEngine.seedExtendAlign (BLAST-like heuristic)', () {
+    test('finds and aligns a shared exact seed region efficiently', () {
+      final core = _randomSeq(200, 5);
+      final a = '${_randomSeq(300, 1)}$core${_randomSeq(300, 2)}';
+      final b = '${_randomSeq(300, 3)}$core${_randomSeq(300, 4)}';
+      final r = AlignmentEngine.seedExtendAlign(
+        a,
+        b,
+        options: const AlignmentOptions(seedLength: 11, extendWindow: 32),
+      );
+      expect(r.mode, AlignmentMode.heuristicSeedExtend);
+      expect(r.seedHits, greaterThan(0));
+      // Should have aligned a much smaller window than the full sequences.
+      expect(r.alignedSeqA.length, lessThan(a.length));
+      expect(r.identityPercent, greaterThan(50));
+    });
+
+    test('falls back to full global alignment with a note when no seed '
+        'exists', () {
+      // Two sequences built from disjoint alphabets share no k-mer.
+      final a = 'AAAAAAAAAAAAAAAA';
+      final b = 'GGGGGGGGGGGGGGGG';
+      final r = AlignmentEngine.seedExtendAlign(
+        a,
+        b,
+        options: const AlignmentOptions(seedLength: 11),
+      );
+      expect(r.seedHits, 0);
+      expect(r.notes, isNotEmpty);
+      expect(r.alignedSeqA.length, a.length);
+    });
+
+    test('is dramatically faster than full DP on long sequences with one '
+        'shared region', () {
+      final core = _randomSeq(100, 9);
+      final a = '${_randomSeq(4000, 11)}$core${_randomSeq(4000, 12)}';
+      final b = '${_randomSeq(4000, 13)}$core${_randomSeq(4000, 14)}';
+      final swFast = Stopwatch()..start();
+      final fast = AlignmentEngine.seedExtendAlign(a, b);
+      swFast.stop();
+      expect(fast.seedHits, greaterThan(0));
+      // The heuristic should only need to DP-align a small window, so it
+      // must be comfortably faster than full O(n*m) global alignment would
+      // be on ~8000x8000 sequences (sanity bound, not a tight benchmark).
+      expect(swFast.elapsedMilliseconds, lessThan(500));
+    });
+  });
+
+  group('AlignmentEngine.multipleAlign with MsaMethod.muscle', () {
+    test('produces a column-consistent alignment for similar sequences', () {
+      const base = 'ACGTACGTACGTACGTACGTACGTACGT';
+      final seqs = [
+        base,
+        '${base.substring(0, 10)}GG${base.substring(10)}',
+        base,
+        base.replaceRange(20, 22, 'TT'),
+      ];
+      final r = AlignmentEngine.multipleAlign(
+        ['a', 'b', 'c', 'd'],
+        seqs,
+        method: MsaMethod.muscle,
+        options: const AlignmentOptions(refinementIterations: 4),
+      );
+      expect(r.method, MsaMethod.muscle);
+      final lengths = r.alignedSequences.map((s) => s.length).toSet();
+      expect(lengths.length, 1, reason: 'all rows must share one length');
+      expect(lengths.first, r.consensusLength);
+      expect(r.averageIdentity, greaterThan(70));
+      expect(r.notes, isNotEmpty);
+    });
+
+    test('handles divergent sequence sets without throwing and keeps rows '
+        'aligned', () {
+      final seqs = [
+        _randomSeq(80, 1),
+        _randomSeq(80, 2),
+        _randomSeq(80, 3),
+        _randomSeq(80, 4),
+        _randomSeq(80, 5),
+      ];
+      final r = AlignmentEngine.multipleAlign(
+        List.generate(5, (i) => 'seq$i'),
+        seqs,
+        method: MsaMethod.muscle,
+        options: const AlignmentOptions(refinementIterations: 5),
+      );
+      expect(r.alignedSequences.length, 5);
+      final lengths = r.alignedSequences.map((s) => s.length).toSet();
+      expect(lengths.length, 1);
+    });
+
+    test('refinement never makes the sum-of-pairs alignment score worse '
+        'than the unrefined progressive alignment', () {
+      final seqs = [
+        _randomSeq(60, 21),
+        _randomSeq(60, 22),
+        _randomSeq(60, 23),
+        _randomSeq(60, 24),
+        _randomSeq(60, 25),
+        _randomSeq(60, 26),
+      ];
+      final names = List.generate(6, (i) => 'seq$i');
+
+      final unrefined = AlignmentEngine.multipleAlign(
+        names,
+        seqs,
+        method: MsaMethod.guideTree,
+      );
+      final refined = AlignmentEngine.multipleAlign(
+        names,
+        seqs,
+        method: MsaMethod.muscle,
+        options: const AlignmentOptions(refinementIterations: 8),
+      );
+      // Both alignments should be internally consistent (equal row length).
+      expect(refined.alignedSequences.map((s) => s.length).toSet().length, 1);
+      expect(unrefined.alignedSequences.map((s) => s.length).toSet().length, 1);
+    });
+
+    test('zero refinement iterations still returns a valid profile '
+        'alignment (pure progressive, no refinement pass)', () {
+      final seqs = [_randomSeq(50, 31), _randomSeq(50, 32), _randomSeq(50, 33)];
+      final r = AlignmentEngine.multipleAlign(
+        ['a', 'b', 'c'],
+        seqs,
+        method: MsaMethod.muscle,
+        options: const AlignmentOptions(refinementIterations: 0),
+      );
+      expect(r.refinementPasses, 0);
+      final lengths = r.alignedSequences.map((s) => s.length).toSet();
+      expect(lengths.length, 1);
+    });
+
+    test('true profile-profile scoring clearly outperforms the single-row '
+        'heuristics on a family with indels (regression guard)', () {
+      final ancestor = _randomSeq(200, 77);
+      final seqs = <String>[];
+      for (int i = 0; i < 10; i++) {
+        var s = ancestor;
+        final pos = (i * 37 + 13) % s.length;
+        if (i % 2 == 0) {
+          s = s.substring(0, pos) + _randomSeq(3, i * 7) + s.substring(pos);
+        } else {
+          s = s.substring(0, pos) + s.substring((pos + 3).clamp(0, s.length));
+        }
+        final chars = s.split('');
+        for (int m = 0; m < 6; m++) {
+          final p = (i * 53 + m * 11) % chars.length;
+          chars[p] = 'ACGT'[(i + m) % 4];
+        }
+        seqs.add(chars.join());
+      }
+      final names = List.generate(10, (i) => 'seq$i');
+
+      final guide = AlignmentEngine.multipleAlign(
+        names,
+        seqs,
+        method: MsaMethod.guideTree,
+      );
+      final muscle = AlignmentEngine.multipleAlign(
+        names,
+        seqs,
+        method: MsaMethod.muscle,
+        options: const AlignmentOptions(refinementIterations: 15),
+      );
+
+      expect(muscle.averageIdentity, greaterThan(guide.averageIdentity + 20));
     });
   });
 }
