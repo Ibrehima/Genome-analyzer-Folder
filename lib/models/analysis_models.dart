@@ -109,7 +109,171 @@ class LampPrimerSet {
 }
 
 /// ---------------- Alignment ----------------
-enum AlignmentMode { global, local }
+
+/// Overall alignment strategy.
+enum AlignmentMode { global, local, glocal }
+
+extension AlignmentModeLabel on AlignmentMode {
+  String get label {
+    switch (this) {
+      case AlignmentMode.global:
+        return 'Global (Needleman-Wunsch)';
+      case AlignmentMode.local:
+        return 'Local (Smith-Waterman)';
+      case AlignmentMode.glocal:
+        return 'Semi-global (fit / overlap)';
+    }
+  }
+
+  String get shortLabel {
+    switch (this) {
+      case AlignmentMode.global:
+        return 'Global (NW)';
+      case AlignmentMode.local:
+        return 'Local (SW)';
+      case AlignmentMode.glocal:
+        return 'Semi-global';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case AlignmentMode.global:
+        return 'End-to-end alignment of both full sequences.';
+      case AlignmentMode.local:
+        return 'Finds the single best-matching sub-region of both sequences.';
+      case AlignmentMode.glocal:
+        return 'Fits sequence B fully inside sequence A, without penalizing '
+            'A\'s overhanging ends (e.g. primer/read vs. reference).';
+    }
+  }
+}
+
+/// Gap penalty model.
+enum GapModel { linear, affine }
+
+extension GapModelLabel on GapModel {
+  String get label {
+    switch (this) {
+      case GapModel.linear:
+        return 'Linear (single penalty per gap base)';
+      case GapModel.affine:
+        return 'Affine (open + extend, Gotoh algorithm)';
+    }
+  }
+}
+
+/// Substitution scoring scheme.
+enum SubstitutionMatrixType {
+  simple,
+  dnaTransitionTransversion,
+  blosum62,
+  pam250,
+}
+
+extension SubstitutionMatrixLabel on SubstitutionMatrixType {
+  String get label {
+    switch (this) {
+      case SubstitutionMatrixType.simple:
+        return 'Simple (match / mismatch)';
+      case SubstitutionMatrixType.dnaTransitionTransversion:
+        return 'DNA transition / transversion aware';
+      case SubstitutionMatrixType.blosum62:
+        return 'BLOSUM62 (protein)';
+      case SubstitutionMatrixType.pam250:
+        return 'PAM250 (protein)';
+    }
+  }
+
+  bool get isProteinMatrix =>
+      this == SubstitutionMatrixType.blosum62 ||
+      this == SubstitutionMatrixType.pam250;
+}
+
+/// Multiple-sequence-alignment construction method.
+enum MsaMethod { centerStar, guideTree }
+
+extension MsaMethodLabel on MsaMethod {
+  String get label {
+    switch (this) {
+      case MsaMethod.centerStar:
+        return 'Fast (center-sequence heuristic)';
+      case MsaMethod.guideTree:
+        return 'Accurate (UPGMA guide-tree, progressive)';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case MsaMethod.centerStar:
+        return 'Aligns every sequence against the single longest sequence. '
+            'Fastest, least accurate for divergent sets.';
+      case MsaMethod.guideTree:
+        return 'Builds a UPGMA guide tree from k-mer distances, then '
+            'progressively merges the closest sequences/profiles first '
+            '(ClustalW-style). More accurate, still fast via k-mer '
+            'pre-clustering.';
+    }
+  }
+}
+
+/// Full scoring/algorithm configuration shared by pairwise & multiple
+/// alignment. Sensible defaults reproduce the previous hard-coded behaviour.
+class AlignmentOptions {
+  final SubstitutionMatrixType matrixType;
+  final int matchScore;
+  final int mismatchScore;
+  final int transitionPenalty; // used only for dnaTransitionTransversion
+  final GapModel gapModel;
+  final int gapPenalty; // linear model: cost per gap base
+  final int gapOpenPenalty; // affine model: one-off cost to open a gap
+  final int gapExtendPenalty; // affine model: cost per extended gap base
+  final bool autoBand; // auto-engage banded DP for long, near-equal pairs
+  final int bandWidth;
+  final int bandLengthThreshold; // min sequence length before banding kicks in
+
+  const AlignmentOptions({
+    this.matrixType = SubstitutionMatrixType.simple,
+    this.matchScore = 2,
+    this.mismatchScore = -1,
+    this.transitionPenalty = 0,
+    this.gapModel = GapModel.linear,
+    this.gapPenalty = -2,
+    this.gapOpenPenalty = -8,
+    this.gapExtendPenalty = -1,
+    this.autoBand = true,
+    this.bandWidth = 64,
+    this.bandLengthThreshold = 800,
+  });
+
+  AlignmentOptions copyWith({
+    SubstitutionMatrixType? matrixType,
+    int? matchScore,
+    int? mismatchScore,
+    int? transitionPenalty,
+    GapModel? gapModel,
+    int? gapPenalty,
+    int? gapOpenPenalty,
+    int? gapExtendPenalty,
+    bool? autoBand,
+    int? bandWidth,
+    int? bandLengthThreshold,
+  }) {
+    return AlignmentOptions(
+      matrixType: matrixType ?? this.matrixType,
+      matchScore: matchScore ?? this.matchScore,
+      mismatchScore: mismatchScore ?? this.mismatchScore,
+      transitionPenalty: transitionPenalty ?? this.transitionPenalty,
+      gapModel: gapModel ?? this.gapModel,
+      gapPenalty: gapPenalty ?? this.gapPenalty,
+      gapOpenPenalty: gapOpenPenalty ?? this.gapOpenPenalty,
+      gapExtendPenalty: gapExtendPenalty ?? this.gapExtendPenalty,
+      autoBand: autoBand ?? this.autoBand,
+      bandWidth: bandWidth ?? this.bandWidth,
+      bandLengthThreshold: bandLengthThreshold ?? this.bandLengthThreshold,
+    );
+  }
+}
 
 class PairwiseAlignmentResult {
   final String alignedSeqA;
@@ -118,7 +282,12 @@ class PairwiseAlignmentResult {
   final double identityPercent;
   final double similarityPercent;
   final int gaps;
+  final int gapOpenings;
   final AlignmentMode mode;
+  final SubstitutionMatrixType matrixType;
+  final GapModel gapModel;
+  final bool banded;
+  final int elapsedMicros;
 
   PairwiseAlignmentResult({
     required this.alignedSeqA,
@@ -127,8 +296,15 @@ class PairwiseAlignmentResult {
     required this.identityPercent,
     required this.similarityPercent,
     required this.gaps,
+    this.gapOpenings = 0,
     required this.mode,
+    this.matrixType = SubstitutionMatrixType.simple,
+    this.gapModel = GapModel.linear,
+    this.banded = false,
+    this.elapsedMicros = 0,
   });
+
+  double get elapsedMs => elapsedMicros / 1000.0;
 }
 
 class MultipleAlignmentResult {
@@ -137,6 +313,9 @@ class MultipleAlignmentResult {
   final double averageIdentity;
   final int consensusLength;
   final String consensusSequence;
+  final MsaMethod method;
+  final int elapsedMicros;
+  final List<int> guideOrder;
 
   MultipleAlignmentResult({
     required this.names,
@@ -144,7 +323,12 @@ class MultipleAlignmentResult {
     required this.averageIdentity,
     required this.consensusLength,
     required this.consensusSequence,
+    this.method = MsaMethod.centerStar,
+    this.elapsedMicros = 0,
+    this.guideOrder = const [],
   });
+
+  double get elapsedMs => elapsedMicros / 1000.0;
 }
 
 /// ---------------- Phylogenetics ----------------
