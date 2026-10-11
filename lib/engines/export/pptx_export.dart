@@ -39,15 +39,9 @@ class PptxExportEngine {
         slideBodies.add(_SlideContent(title: section.title, lines: []));
       } else {
         for (int i = 0; i < lines.length; i += chunkSize) {
-          final chunk = lines.sublist(
-            i,
-            (i + chunkSize).clamp(0, lines.length),
-          );
+          final chunk = lines.sublist(i, (i + chunkSize).clamp(0, lines.length));
           slideBodies.add(
-            _SlideContent(
-              title: i == 0 ? section.title : '${section.title} (cont.)',
-              lines: chunk,
-            ),
+            _SlideContent(title: i == 0 ? section.title : '${section.title} (cont.)', lines: chunk),
           );
         }
       }
@@ -56,15 +50,10 @@ class PptxExportEngine {
     final parts = <String, String>{
       '[Content_Types].xml': _contentTypesXml(slideBodies.length),
       '_rels/.rels': _rootRelsXml(),
-      'docProps/core.xml': OoxmlUtils.coreProps(
-        title: data.title,
-        date: data.generatedAt,
-      ),
+      'docProps/core.xml': OoxmlUtils.coreProps(title: data.title, date: data.generatedAt),
       'docProps/app.xml': OoxmlUtils.appProps(),
       'ppt/presentation.xml': _presentationXml(slideBodies.length),
-      'ppt/_rels/presentation.xml.rels': _presentationRelsXml(
-        slideBodies.length,
-      ),
+      'ppt/_rels/presentation.xml.rels': _presentationRelsXml(slideBodies.length),
       'ppt/theme/theme1.xml': _themeXml(),
       'ppt/slideMasters/slideMaster1.xml': _slideMasterXml(),
       'ppt/slideMasters/_rels/slideMaster1.xml.rels': _slideMasterRelsXml(),
@@ -204,9 +193,7 @@ class PptxExportEngine {
   static String _slideXml(_SlideContent content) {
     final paragraphs = StringBuffer();
     if (content.lines.isEmpty) {
-      paragraphs.write(
-        '<a:p><a:r><a:rPr lang="en-US" sz="1800"/><a:t></a:t></a:r></a:p>',
-      );
+      paragraphs.write('<a:p><a:r><a:rPr lang="en-US" sz="1800"/><a:t></a:t></a:r></a:p>');
     }
     for (final line in content.lines) {
       paragraphs.write(

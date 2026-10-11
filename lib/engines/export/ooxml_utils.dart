@@ -26,13 +26,10 @@ class OoxmlUtils {
     return Uint8List.fromList(encoded);
   }
 
-  static String isoDate(DateTime dt) =>
-      '${dt.toUtc().toIso8601String().split('.').first}Z';
+  static String isoDate(DateTime dt) => '${dt.toUtc().toIso8601String().split('.').first}Z';
 
-  static const relNsPackage =
-      'http://schemas.openxmlformats.org/package/2006/relationships';
-  static const relNsOffice =
-      'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+  static const relNsPackage = 'http://schemas.openxmlformats.org/package/2006/relationships';
+  static const relNsOffice = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 
   static String coreProps({required String title, required DateTime date}) =>
       '''

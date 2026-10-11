@@ -14,11 +14,7 @@ class PhyloTreeView extends StatelessWidget {
     final leafCount = tree.leafNames.length;
     final width = 500.0;
     final computedHeight = (leafCount * 34.0).clamp(height, 4000.0);
-    PhyloEngine.layoutTree(
-      tree.root,
-      width: width - 160,
-      height: computedHeight - 20,
-    );
+    PhyloEngine.layoutTree(tree.root, width: width - 160, height: computedHeight - 20);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -47,11 +43,7 @@ class _TreePainter extends CustomPainter {
 
     void drawNode(PhyloNode node, double parentX, double parentY) {
       // Horizontal branch from parent depth to this node's depth (at same y)
-      canvas.drawLine(
-        Offset(parentX, node.y),
-        Offset(node.x, node.y),
-        linePaint,
-      );
+      canvas.drawLine(Offset(parentX, node.y), Offset(node.x, node.y), linePaint);
       // Vertical connector at parentX between children when applicable handled by caller
       if (node.isLeaf) {
         canvas.drawCircle(Offset(node.x, node.y), 3, dotPaint);

@@ -26,9 +26,7 @@ class OnlineApiService {
   }
 
   /// GBIF occurrence search by scientific name (returns raw counts + sample records).
-  static Future<Map<String, dynamic>?> gbifOccurrenceSearch(
-    String scientificName,
-  ) async {
+  static Future<Map<String, dynamic>?> gbifOccurrenceSearch(String scientificName) async {
     try {
       final uri = Uri.parse(
         'https://api.gbif.org/v1/occurrence/search?scientificName=${Uri.encodeComponent(scientificName)}&limit=5',
@@ -42,10 +40,7 @@ class OnlineApiService {
   }
 
   /// UniProt REST search (protein records) — generally CORS-enabled.
-  static Future<List<dynamic>?> uniprotSearch(
-    String query, {
-    int size = 5,
-  }) async {
+  static Future<List<dynamic>?> uniprotSearch(String query, {int size = 5}) async {
     try {
       final uri = Uri.parse(
         'https://rest.uniprot.org/uniprotkb/search?query=${Uri.encodeComponent(query)}&size=$size&format=json&fields=accession,id,protein_name,organism_name,length',
@@ -77,10 +72,7 @@ class OnlineApiService {
   }
 
   /// NCBI E-utilities ESearch (may be blocked by CORS on Web; works on Android).
-  static Future<List<String>?> ncbiEsearch({
-    required String db,
-    required String term,
-  }) async {
+  static Future<List<String>?> ncbiEsearch({required String db, required String term}) async {
     try {
       final uri = Uri.parse(
         'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=$db&term=${Uri.encodeComponent(term)}&retmode=json&retmax=10',
@@ -88,8 +80,7 @@ class OnlineApiService {
       final res = await http.get(uri).timeout(_timeout);
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body) as Map<String, dynamic>;
-        final idlist = (data['esearchresult']?['idlist'] as List?)
-            ?.cast<String>();
+        final idlist = (data['esearchresult']?['idlist'] as List?)?.cast<String>();
         return idlist;
       }
     } catch (_) {}
@@ -97,10 +88,7 @@ class OnlineApiService {
   }
 
   /// NCBI E-utilities EFetch — retrieve FASTA for a given UID.
-  static Future<String?> ncbiEfetchFasta({
-    required String db,
-    required String id,
-  }) async {
+  static Future<String?> ncbiEfetchFasta({required String db, required String id}) async {
     try {
       final uri = Uri.parse(
         'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=$db&id=$id&rettype=fasta&retmode=text',

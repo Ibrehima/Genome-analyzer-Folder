@@ -55,17 +55,11 @@ class PhyloEngine {
   }
 
   /// UPGMA hierarchical clustering tree construction.
-  static PhyloTreeResult buildUPGMA(
-    List<String> names,
-    List<String> sequences,
-  ) {
+  static PhyloTreeResult buildUPGMA(List<String> names, List<String> sequences) {
     final n = names.length;
     final dist = distanceMatrix(sequences);
 
-    List<PhyloNode> clusters = List.generate(
-      n,
-      (i) => PhyloNode(label: names[i]),
-    );
+    List<PhyloNode> clusters = List.generate(n, (i) => PhyloNode(label: names[i]));
     List<int> sizes = List.filled(n, 1);
     List<List<double>> d = dist.map((row) => List<double>.from(row)).toList();
     List<double> heights = List.filled(n, 0);
@@ -100,16 +94,8 @@ class PhyloEngine {
 
       final merged = PhyloNode(
         children: [
-          PhyloNode(
-            label: nodeI.label,
-            branchLength: branchI,
-            children: nodeI.children,
-          ),
-          PhyloNode(
-            label: nodeJ.label,
-            branchLength: branchJ,
-            children: nodeJ.children,
-          ),
+          PhyloNode(label: nodeI.label, branchLength: branchI, children: nodeI.children),
+          PhyloNode(label: nodeJ.label, branchLength: branchJ, children: nodeJ.children),
         ],
       );
 
@@ -120,8 +106,7 @@ class PhyloEngine {
       for (final idx in activeIndices) {
         if (idx == mi || idx == mj) continue;
         final combined =
-            (currentDist[mi][idx] * currentSizes[mi] +
-                currentDist[mj][idx] * currentSizes[mj]) /
+            (currentDist[mi][idx] * currentSizes[mi] + currentDist[mj][idx] * currentSizes[mj]) /
             newSize;
         newDistances[idx] = combined;
       }
@@ -154,10 +139,7 @@ class PhyloEngine {
   }
 
   /// Neighbor-Joining tree construction (simplified).
-  static PhyloTreeResult buildNeighborJoining(
-    List<String> names,
-    List<String> sequences,
-  ) {
+  static PhyloTreeResult buildNeighborJoining(List<String> names, List<String> sequences) {
     final n = names.length;
     if (n < 3) {
       return buildUPGMA(names, sequences);
@@ -198,24 +180,13 @@ class PhyloEngine {
       final i = activeIndices[mi];
       final j = activeIndices[mj];
       final dij = d[i][j];
-      final branchI = max(
-        0.0,
-        0.5 * dij + (m > 2 ? (r[mi] - r[mj]) / (2 * (m - 2)) : 0),
-      );
+      final branchI = max(0.0, 0.5 * dij + (m > 2 ? (r[mi] - r[mj]) / (2 * (m - 2)) : 0));
       final branchJ = max(0.0, dij - branchI);
 
       final merged = PhyloNode(
         children: [
-          PhyloNode(
-            label: nodes[i].label,
-            branchLength: branchI,
-            children: nodes[i].children,
-          ),
-          PhyloNode(
-            label: nodes[j].label,
-            branchLength: branchJ,
-            children: nodes[j].children,
-          ),
+          PhyloNode(label: nodes[i].label, branchLength: branchI, children: nodes[i].children),
+          PhyloNode(label: nodes[j].label, branchLength: branchJ, children: nodes[j].children),
         ],
       );
 
@@ -245,32 +216,16 @@ class PhyloEngine {
     final finalDist = d[i][j];
     final root = PhyloNode(
       children: [
-        PhyloNode(
-          label: nodes[i].label,
-          branchLength: finalDist / 2,
-          children: nodes[i].children,
-        ),
-        PhyloNode(
-          label: nodes[j].label,
-          branchLength: finalDist / 2,
-          children: nodes[j].children,
-        ),
+        PhyloNode(label: nodes[i].label, branchLength: finalDist / 2, children: nodes[i].children),
+        PhyloNode(label: nodes[j].label, branchLength: finalDist / 2, children: nodes[j].children),
       ],
     );
 
-    return PhyloTreeResult(
-      root: root,
-      method: 'Neighbor-Joining',
-      leafNames: names,
-    );
+    return PhyloTreeResult(root: root, method: 'Neighbor-Joining', leafNames: names);
   }
 
   /// Assigns x/y layout coordinates to tree nodes for rendering (cladogram-style).
-  static void layoutTree(
-    PhyloNode root, {
-    double width = 800,
-    double height = 600,
-  }) {
+  static void layoutTree(PhyloNode root, {double width = 800, double height = 600}) {
     final leaves = <PhyloNode>[];
     void collectLeaves(PhyloNode node) {
       if (node.isLeaf) {

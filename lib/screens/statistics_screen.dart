@@ -30,9 +30,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     if (seqs.isEmpty) return;
     setState(() => _running = true);
     await Future.delayed(const Duration(milliseconds: 50));
-    final report = StatisticsEngine.analyzeCollection(
-      seqs.map((s) => s!).toList(),
-    );
+    final report = StatisticsEngine.analyzeCollection(seqs.map((s) => s!).toList());
     setState(() {
       _report = report;
       _running = false;
@@ -40,7 +38,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Future<void> _useAll() async {
-    final all = context.read<AppState>().sequences;
+    final all = context.read<AppState>().sequencesInActiveProject;
     setState(() => _selectedIds = all.map((s) => s.id).toList());
     await _run();
   }
@@ -98,10 +96,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         title: const Text('Statistics Lab'),
         actions: [
           if (_report != null)
-            ExportMenuButton(
-              reportBuilder: _buildReport,
-              moduleType: 'Statistics',
-            ),
+            ExportMenuButton(reportBuilder: _buildReport, moduleType: 'Statistics'),
           const SizedBox(width: 8),
         ],
       ),
@@ -113,10 +108,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               Expanded(
                 child: Text(
                   'Select sequences for analysis',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                 ),
               ),
               TextButton(onPressed: _useAll, child: const Text('Use all')),
@@ -137,15 +129,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.bar_chart_rounded),
-              label: Text(
-                _running ? 'Computing statistics...' : 'Compute Statistics',
-              ),
+              label: Text(_running ? 'Computing statistics...' : 'Compute Statistics'),
             ),
           ),
           const SizedBox(height: 20),
@@ -226,24 +213,16 @@ class _StatisticsView extends StatelessWidget {
                       gridData: const FlGridData(show: false),
                       borderData: FlBorderData(show: false),
                       titlesData: FlTitlesData(
-                        topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
+                        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                         leftTitles: const AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 30,
-                          ),
+                          sideTitles: SideTitles(showTitles: true, reservedSize: 30),
                         ),
                         bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
                             getTitlesWidget: (value, meta) {
-                              final keys = report.nucleotideFrequency.keys
-                                  .toList();
+                              final keys = report.nucleotideFrequency.keys.toList();
                               final idx = value.toInt();
                               if (idx < 0 || idx >= keys.length) {
                                 return const SizedBox.shrink();
@@ -252,41 +231,35 @@ class _StatisticsView extends StatelessWidget {
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Text(
                                   keys[idx],
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
                                 ),
                               );
                             },
                           ),
                         ),
                       ),
-                      barGroups: report.nucleotideFrequency.entries
-                          .toList()
-                          .asMap()
-                          .entries
-                          .map((e) {
-                            final colors = [
-                              AppColors.primaryBlue,
-                              AppColors.teal,
-                              const Color(0xFF7B1FA2),
-                              AppColors.warning,
-                              Colors.grey,
-                            ];
-                            return BarChartGroupData(
-                              x: e.key,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: e.value.value.toDouble(),
-                                  color: colors[e.key % colors.length],
-                                  width: 22,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ],
-                            );
-                          })
-                          .toList(),
+                      barGroups: report.nucleotideFrequency.entries.toList().asMap().entries.map((
+                        e,
+                      ) {
+                        final colors = [
+                          AppColors.primaryBlue,
+                          AppColors.teal,
+                          const Color(0xFF7B1FA2),
+                          AppColors.warning,
+                          Colors.grey,
+                        ];
+                        return BarChartGroupData(
+                          x: e.key,
+                          barRods: [
+                            BarChartRodData(
+                              toY: e.value.value.toDouble(),
+                              color: colors[e.key % colors.length],
+                              width: 22,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ],
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),
@@ -306,17 +279,9 @@ class _StatisticsView extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
                 ),
                 const SizedBox(height: 10),
-                _diversityRow(
-                  'Shannon Index (H\')',
-                  report.shannonDiversityIndex,
-                  4,
-                ),
+                _diversityRow('Shannon Index (H\')', report.shannonDiversityIndex, 4),
                 const SizedBox(height: 8),
-                _diversityRow(
-                  'Simpson Index (1-D)',
-                  report.simpsonDiversityIndex,
-                  1,
-                ),
+                _diversityRow('Simpson Index (1-D)', report.simpsonDiversityIndex, 1),
               ],
             ),
           ),
@@ -333,10 +298,7 @@ class _StatisticsView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(label, style: const TextStyle(fontSize: 12.5)),
-            Text(
-              value.toStringAsFixed(3),
-              style: const TextStyle(fontWeight: FontWeight.w700),
-            ),
+            Text(value.toStringAsFixed(3), style: const TextStyle(fontWeight: FontWeight.w700)),
           ],
         ),
         const SizedBox(height: 4),
@@ -365,11 +327,7 @@ class _StatisticsView extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 18,
-              color: color,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: color),
           ),
           Text(label, style: TextStyle(fontSize: 11, color: color)),
         ],

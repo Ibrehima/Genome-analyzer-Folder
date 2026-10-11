@@ -75,15 +75,10 @@ class _ProteomicsScreenState extends State<ProteomicsScreen> {
           _forwardStrand = best['forward'] as bool;
         });
       } else {
-        final strandSeq = _forwardStrand
-            ? dna
-            : SequenceEngine.reverseComplement(dna);
-        final trimmed = strandSeq.length > (_frame - 1)
-            ? strandSeq.substring(_frame - 1)
-            : '';
+        final strandSeq = _forwardStrand ? dna : SequenceEngine.reverseComplement(dna);
+        final trimmed = strandSeq.length > (_frame - 1) ? strandSeq.substring(_frame - 1) : '';
         protein = SequenceEngine.translate(trimmed);
-        note =
-            'Translated frame $_frame, ${_forwardStrand ? 'forward' : 'reverse'} strand.';
+        note = 'Translated frame $_frame, ${_forwardStrand ? 'forward' : 'reverse'} strand.';
       }
     }
     setState(() {
@@ -107,10 +102,7 @@ class _ProteomicsScreenState extends State<ProteomicsScreen> {
           table: [
             ['Property', 'Value'],
             ['Length', '${r.proteinSequence.length} aa'],
-            [
-              'Molecular weight',
-              '${r.molecularWeightDa.toStringAsFixed(1)} Da',
-            ],
+            ['Molecular weight', '${r.molecularWeightDa.toStringAsFixed(1)} Da'],
             ['Theoretical pI', r.isoelectricPoint.toStringAsFixed(2)],
             ['GRAVY (hydrophobicity)', r.gravyScore.toStringAsFixed(3)],
             ['Aliphatic index', r.aliphaticIndex.toStringAsFixed(1)],
@@ -152,19 +144,14 @@ class _ProteomicsScreenState extends State<ProteomicsScreen> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final selectedSeq = _selectedId != null
-        ? appState.getSequenceById(_selectedId!)
-        : null;
+    final selectedSeq = _selectedId != null ? appState.getSequenceById(_selectedId!) : null;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Proteomics'),
         actions: [
           if (_result != null)
-            ExportMenuButton(
-              reportBuilder: _buildReport,
-              moduleType: 'Proteomics',
-            ),
+            ExportMenuButton(reportBuilder: _buildReport, moduleType: 'Proteomics'),
           const SizedBox(width: 8),
         ],
       ),
@@ -180,8 +167,7 @@ class _ProteomicsScreenState extends State<ProteomicsScreen> {
             }),
             label: 'Select a DNA, RNA or Protein sequence',
           ),
-          if (selectedSeq != null &&
-              selectedSeq.type != SequenceType.protein) ...[
+          if (selectedSeq != null && selectedSeq.type != SequenceType.protein) ...[
             const SizedBox(height: 14),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
@@ -198,11 +184,11 @@ class _ProteomicsScreenState extends State<ProteomicsScreen> {
                   const Text('Frame: ', style: TextStyle(fontSize: 12.5)),
                   DropdownButton<int>(
                     value: _frame,
-                    items: const [1, 2, 3]
-                        .map(
-                          (f) => DropdownMenuItem(value: f, child: Text('$f')),
-                        )
-                        .toList(),
+                    items: const [
+                      1,
+                      2,
+                      3,
+                    ].map((f) => DropdownMenuItem(value: f, child: Text('$f'))).toList(),
                     onChanged: (v) => setState(() => _frame = v ?? 1),
                   ),
                   const SizedBox(width: 20),
@@ -213,8 +199,7 @@ class _ProteomicsScreenState extends State<ProteomicsScreen> {
                       DropdownMenuItem(value: true, child: Text('Forward')),
                       DropdownMenuItem(value: false, child: Text('Reverse')),
                     ],
-                    onChanged: (v) =>
-                        setState(() => _forwardStrand = v ?? true),
+                    onChanged: (v) => setState(() => _forwardStrand = v ?? true),
                   ),
                 ],
               ),
@@ -231,10 +216,7 @@ class _ProteomicsScreenState extends State<ProteomicsScreen> {
           ),
           const SizedBox(height: 20),
           if (_result != null)
-            _ProteomicsResultView(
-              result: _result!,
-              note: _translationNote ?? '',
-            ),
+            _ProteomicsResultView(result: _result!, note: _translationNote ?? ''),
         ],
       ),
     );
@@ -258,10 +240,7 @@ class _ProteomicsResultView extends StatelessWidget {
         if (note.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
-            child: Text(
-              note,
-              style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
-            ),
+            child: Text(note, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
           ),
         Card(
           child: Padding(
@@ -270,11 +249,7 @@ class _ProteomicsResultView extends StatelessWidget {
               spacing: 12,
               runSpacing: 10,
               children: [
-                _metric(
-                  'Length',
-                  '${result.proteinSequence.length} aa',
-                  AppColors.primaryBlue,
-                ),
+                _metric('Length', '${result.proteinSequence.length} aa', AppColors.primaryBlue),
                 _metric(
                   'MW',
                   '${(result.molecularWeightDa / 1000).toStringAsFixed(1)} kDa',
@@ -338,10 +313,7 @@ class _ProteomicsResultView extends StatelessWidget {
                           .toList(),
                       titlesData: FlTitlesData(
                         leftTitles: const AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 32,
-                          ),
+                          sideTitles: SideTitles(showTitles: true, reservedSize: 32),
                         ),
                         bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
@@ -353,20 +325,13 @@ class _ProteomicsResultView extends StatelessWidget {
                               );
                               return Padding(
                                 padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  aa.key,
-                                  style: const TextStyle(fontSize: 10),
-                                ),
+                                child: Text(aa.key, style: const TextStyle(fontSize: 10)),
                               );
                             },
                           ),
                         ),
-                        rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
+                        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                       ),
                       gridData: const FlGridData(show: false),
                       borderData: FlBorderData(show: false),
@@ -402,10 +367,7 @@ class _ProteomicsResultView extends StatelessWidget {
                           width: 60,
                           child: Text(
                             e.key,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.5,
-                            ),
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12.5),
                           ),
                         ),
                         Expanded(
@@ -415,17 +377,12 @@ class _ProteomicsResultView extends StatelessWidget {
                               value: (e.value / 2).clamp(0, 1),
                               minHeight: 10,
                               backgroundColor: Colors.grey.shade200,
-                              color: e.value >= 1
-                                  ? AppColors.success
-                                  : AppColors.textMuted,
+                              color: e.value >= 1 ? AppColors.success : AppColors.textMuted,
                             ),
                           ),
                         ),
                         const SizedBox(width: 10),
-                        Text(
-                          e.value.toStringAsFixed(2),
-                          style: const TextStyle(fontSize: 12),
-                        ),
+                        Text(e.value.toStringAsFixed(2), style: const TextStyle(fontSize: 12)),
                       ],
                     ),
                   ),
@@ -449,11 +406,7 @@ class _ProteomicsResultView extends StatelessWidget {
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 15,
-              color: color,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: color),
           ),
           Text(label, style: TextStyle(fontSize: 10.5, color: color)),
         ],

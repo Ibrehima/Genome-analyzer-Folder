@@ -71,9 +71,7 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
   void _runExplorerSearch() {
     var results = MetabolomicsEngine.search(_searchCtrl.text);
     if (_classFilter != null) {
-      results = results
-          .where((m) => m.metaboliteClass == _classFilter)
-          .toList();
+      results = results.where((m) => m.metaboliteClass == _classFilter).toList();
     }
     setState(() => _explorerResults = results);
   }
@@ -81,9 +79,9 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
   void _runMassSearch() {
     final mass = double.tryParse(_massCtrl.text.trim());
     if (mass == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid numeric mass (Da).')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Enter a valid numeric mass (Da).')));
       return;
     }
     setState(() {
@@ -100,8 +98,7 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
     String url;
     switch (site) {
       case 'KEGG':
-        url =
-            'https://www.genome.jp/kegg-bin/search?keyword=$q&mode=1&category=compound';
+        url = 'https://www.genome.jp/kegg-bin/search?keyword=$q&mode=1&category=compound';
         break;
       case 'HMDB':
         url = 'https://hmdb.ca/unearth/q?query=$q&searcher=metabolites';
@@ -113,9 +110,7 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Could not open $url')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not open $url')));
       }
     }
   }
@@ -130,19 +125,11 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
           table: [
             ['Property', 'Value'],
             ['Formula', r.formula],
-            [
-              'Average molecular weight',
-              '${r.averageMassDa.toStringAsFixed(3)} Da',
-            ],
-            [
-              'Monoisotopic mass',
-              '${r.monoisotopicMassDa.toStringAsFixed(4)} Da',
-            ],
+            ['Average molecular weight', '${r.averageMassDa.toStringAsFixed(3)} Da'],
+            ['Monoisotopic mass', '${r.monoisotopicMassDa.toStringAsFixed(4)} Da'],
             [
               'Elemental composition',
-              r.elementCounts.entries
-                  .map((e) => '${e.key}${e.value}')
-                  .join(' '),
+              r.elementCounts.entries.map((e) => '${e.key}${e.value}').join(' '),
             ],
           ],
         ),
@@ -196,10 +183,7 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
           ],
         ),
         actions: [
-          ExportMenuButton(
-            reportBuilder: _buildReport,
-            moduleType: 'Metabolomics',
-          ),
+          ExportMenuButton(reportBuilder: _buildReport, moduleType: 'Metabolomics'),
           const SizedBox(width: 8),
         ],
       ),
@@ -212,30 +196,19 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
               decoration: BoxDecoration(
                 color: AppColors.gradMetabolomics.first.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.gradMetabolomics.first.withValues(
-                    alpha: 0.25,
-                  ),
-                ),
+                border: Border.all(color: AppColors.gradMetabolomics.first.withValues(alpha: 0.25)),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    size: 18,
-                    color: AppColors.gradMetabolomics.first,
-                  ),
+                  Icon(Icons.info_outline, size: 18, color: AppColors.gradMetabolomics.first),
                   const SizedBox(width: 10),
                   const Expanded(
                     child: Text(
                       'Formula-mass math uses real atomic-weight constants (exact). The '
                       'metabolite database is a small curated demonstration set — for '
                       'authoritative data use KEGG / HMDB / PubChem / MetaboAnalyst.',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        color: AppColors.textMuted,
-                      ),
+                      style: TextStyle(fontSize: 11.5, color: AppColors.textMuted),
                     ),
                   ),
                 ],
@@ -245,11 +218,7 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildFormulaTab(),
-                _buildExplorerTab(),
-                _buildMassIdTab(),
-              ],
+              children: [_buildFormulaTab(), _buildExplorerTab(), _buildMassIdTab()],
             ),
           ),
         ],
@@ -292,10 +261,7 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
                   children: [
                     const Text(
                       'Elemental Composition',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
                     ),
                     const SizedBox(height: 10),
                     Wrap(
@@ -305,8 +271,9 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
                           .map(
                             (e) => Chip(
                               label: Text('${e.key}${e.value}'),
-                              backgroundColor: AppColors.gradMetabolomics.first
-                                  .withValues(alpha: 0.12),
+                              backgroundColor: AppColors.gradMetabolomics.first.withValues(
+                                alpha: 0.12,
+                              ),
                             ),
                           )
                           .toList(),
@@ -328,17 +295,12 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
                         ),
                       ],
                     ),
-                    if (!MetabolomicsEngine.isFormulaFullyRecognized(
-                      r.formula,
-                    )) ...[
+                    if (!MetabolomicsEngine.isFormulaFullyRecognized(r.formula)) ...[
                       const SizedBox(height: 12),
                       const Text(
                         'Note: one or more symbols in this formula were not recognized '
                         'and were ignored in the mass calculation.',
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          color: AppColors.warning,
-                        ),
+                        style: TextStyle(fontSize: 11.5, color: AppColors.warning),
                       ),
                     ],
                   ],
@@ -424,28 +386,18 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
                           Expanded(
                             child: Text(
                               m.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14.5,
-                              ),
+                              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5),
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: AppColors.gradMetabolomics.first
-                                  .withValues(alpha: 0.12),
+                              color: AppColors.gradMetabolomics.first.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               m.formula,
-                              style: const TextStyle(
-                                fontSize: 11.5,
-                                fontFamily: 'monospace',
-                              ),
+                              style: const TextStyle(fontSize: 11.5, fontFamily: 'monospace'),
                             ),
                           ),
                         ],
@@ -453,64 +405,40 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
                       const SizedBox(height: 4),
                       Text(
                         '${m.metaboliteClass} · ${m.pathway}',
-                        style: const TextStyle(
-                          fontSize: 11.5,
-                          color: AppColors.textMuted,
-                        ),
+                        style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        m.description,
-                        style: const TextStyle(fontSize: 12.5, height: 1.4),
-                      ),
+                      Text(m.description, style: const TextStyle(fontSize: 12.5, height: 1.4)),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: 6,
                         children: [
                           OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               visualDensity: VisualDensity.compact,
                             ),
                             onPressed: () => _openSearch('KEGG', m.name),
                             icon: const Icon(Icons.open_in_new, size: 14),
-                            label: const Text(
-                              'KEGG',
-                              style: TextStyle(fontSize: 11.5),
-                            ),
+                            label: const Text('KEGG', style: TextStyle(fontSize: 11.5)),
                           ),
                           OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               visualDensity: VisualDensity.compact,
                             ),
                             onPressed: () => _openSearch('HMDB', m.name),
                             icon: const Icon(Icons.open_in_new, size: 14),
-                            label: const Text(
-                              'HMDB',
-                              style: TextStyle(fontSize: 11.5),
-                            ),
+                            label: const Text('HMDB', style: TextStyle(fontSize: 11.5)),
                           ),
                           OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               visualDensity: VisualDensity.compact,
                             ),
                             onPressed: () => _openSearch('PubChem', m.name),
                             icon: const Icon(Icons.open_in_new, size: 14),
-                            label: const Text(
-                              'PubChem',
-                              style: TextStyle(fontSize: 11.5),
-                            ),
+                            label: const Text('PubChem', style: TextStyle(fontSize: 11.5)),
                           ),
                         ],
                       ),
@@ -561,10 +489,7 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
                 onChanged: (v) => setState(() => _tolerancePpm = v),
               ),
             ),
-            Text(
-              '${_tolerancePpm.toStringAsFixed(0)} ppm',
-              style: const TextStyle(fontSize: 12.5),
-            ),
+            Text('${_tolerancePpm.toStringAsFixed(0)} ppm', style: const TextStyle(fontSize: 12.5)),
           ],
         ),
         const SizedBox(height: 12),
@@ -581,11 +506,7 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
           'Classic MS-style triage: ranks curated metabolites whose theoretical '
           'adduct mass falls within tolerance of the observed mass. Not a '
           'substitute for MS/MS fragmentation or retention-time confirmation.',
-          style: TextStyle(
-            fontSize: 11.5,
-            color: AppColors.textMuted,
-            fontStyle: FontStyle.italic,
-          ),
+          style: TextStyle(fontSize: 11.5, color: AppColors.textMuted, fontStyle: FontStyle.italic),
         ),
         const SizedBox(height: 16),
         if (_massMatches.isEmpty)
@@ -610,32 +531,20 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
                         children: [
                           Text(
                             m.metabolite.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                            ),
+                            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
                           ),
                           Text(
                             '${m.metabolite.formula} · theoretical ${m.theoreticalMass.toStringAsFixed(4)} Da (${m.adduct})',
-                            style: const TextStyle(
-                              fontSize: 11.5,
-                              color: AppColors.textMuted,
-                            ),
+                            style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted),
                           ),
                         ],
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color:
-                            (m.deltaPpm.abs() < 5
-                                    ? AppColors.success
-                                    : AppColors.warning)
-                                .withValues(alpha: 0.14),
+                        color: (m.deltaPpm.abs() < 5 ? AppColors.success : AppColors.warning)
+                            .withValues(alpha: 0.14),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -643,9 +552,7 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
                         style: TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w700,
-                          color: m.deltaPpm.abs() < 5
-                              ? AppColors.success
-                              : AppColors.warning,
+                          color: m.deltaPpm.abs() < 5 ? AppColors.success : AppColors.warning,
                         ),
                       ),
                     ),
@@ -669,11 +576,7 @@ class _MetabolomicsScreenState extends State<MetabolomicsScreen>
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 15,
-              color: color,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: color),
           ),
           Text(label, style: TextStyle(fontSize: 10.5, color: color)),
         ],

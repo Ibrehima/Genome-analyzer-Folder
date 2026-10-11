@@ -75,10 +75,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> {
         title: const Text('Quality Control'),
         actions: [
           if (_reports.isNotEmpty)
-            ExportMenuButton(
-              reportBuilder: _buildReport,
-              moduleType: 'Quality Control',
-            ),
+            ExportMenuButton(reportBuilder: _buildReport, moduleType: 'Quality Control'),
           const SizedBox(width: 8),
         ],
       ),
@@ -100,15 +97,10 @@ class _QualityControlScreenState extends State<QualityControlScreen> {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.verified_rounded),
-              label: Text(
-                _running ? 'Analyzing quality...' : 'Run Quality Analysis',
-              ),
+              label: Text(_running ? 'Analyzing quality...' : 'Run Quality Analysis'),
             ),
           ),
           const SizedBox(height: 20),
@@ -150,10 +142,7 @@ class _QualityCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     report.sequenceName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14.5,
-                    ),
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5),
                   ),
                 ),
                 Container(
@@ -166,10 +155,7 @@ class _QualityCard extends StatelessWidget {
                   ),
                   child: Text(
                     report.overallGrade,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      color: _gradeColor,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w800, color: _gradeColor),
                   ),
                 ),
               ],
@@ -179,11 +165,7 @@ class _QualityCard extends StatelessWidget {
               spacing: 10,
               runSpacing: 10,
               children: [
-                _metricTile(
-                  'Length',
-                  '${report.length} bp',
-                  AppColors.primaryBlue,
-                ),
+                _metricTile('Length', '${report.length} bp', AppColors.primaryBlue),
                 _metricTile(
                   'GC content',
                   '${report.gcContent.toStringAsFixed(1)}%',
@@ -201,11 +183,7 @@ class _QualityCard extends StatelessWidget {
                     const Color(0xFF7B1FA2),
                   ),
                 if (report.q30Percent >= 0)
-                  _metricTile(
-                    'Q30',
-                    '${report.q30Percent.toStringAsFixed(1)}%',
-                    AppColors.success,
-                  ),
+                  _metricTile('Q30', '${report.q30Percent.toStringAsFixed(1)}%', AppColors.success),
               ],
             ),
             if (report.qualityPerPositionBin.isNotEmpty) ...[
@@ -223,25 +201,13 @@ class _QualityCard extends StatelessWidget {
                 height: 140,
                 child: LineChart(
                   LineChartData(
-                    gridData: const FlGridData(
-                      show: true,
-                      drawVerticalLine: false,
-                    ),
+                    gridData: const FlGridData(show: true, drawVerticalLine: false),
                     titlesData: const FlTitlesData(
-                      topTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      rightTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
+                      topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                       leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 28,
-                        ),
+                        sideTitles: SideTitles(showTitles: true, reservedSize: 28),
                       ),
                     ),
                     borderData: FlBorderData(show: false),
@@ -275,19 +241,12 @@ class _QualityCard extends StatelessWidget {
                 ),
                 child: const Row(
                   children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 16,
-                      color: AppColors.textMuted,
-                    ),
+                    Icon(Icons.info_outline, size: 16, color: AppColors.textMuted),
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'No Phred quality scores available (FASTA input). Upload a FASTQ file to see per-base quality trends.',
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          color: AppColors.textMuted,
-                        ),
+                        style: TextStyle(fontSize: 11.5, color: AppColors.textMuted),
                       ),
                     ),
                   ],
@@ -310,10 +269,7 @@ class _QualityCard extends StatelessWidget {
               children: report.baseComposition.entries
                   .map(
                     (e) => Chip(
-                      label: Text(
-                        '${e.key}: ${e.value}',
-                        style: const TextStyle(fontSize: 11),
-                      ),
+                      label: Text('${e.key}: ${e.value}', style: const TextStyle(fontSize: 11)),
                       visualDensity: VisualDensity.compact,
                       backgroundColor: const Color(0xFFF1F5F9),
                     ),
@@ -337,11 +293,7 @@ class _QualityCard extends StatelessWidget {
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              color: color,
-              fontSize: 14,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w800, color: color, fontSize: 14),
           ),
           Text(label, style: TextStyle(fontSize: 10, color: color)),
         ],

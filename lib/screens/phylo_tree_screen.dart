@@ -69,10 +69,7 @@ class _PhyloTreeScreenState extends State<PhyloTreeScreen> {
         title: const Text('Phylogenetic Tree'),
         actions: [
           if (_tree != null)
-            ExportMenuButton(
-              reportBuilder: _buildReport,
-              moduleType: 'Phylogenetic Tree',
-            ),
+            ExportMenuButton(reportBuilder: _buildReport, moduleType: 'Phylogenetic Tree'),
           const SizedBox(width: 8),
         ],
       ),
@@ -109,10 +106,7 @@ class _PhyloTreeScreenState extends State<PhyloTreeScreen> {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.account_tree_rounded),
               label: Text(_running ? 'Building tree...' : 'Build Tree'),
@@ -121,8 +115,7 @@ class _PhyloTreeScreenState extends State<PhyloTreeScreen> {
           const SizedBox(height: 20),
           if (_selectedIds.isNotEmpty && _selectedIds.length < 3)
             const _InfoBanner(
-              text:
-                  'Select at least 3 sequences to construct a meaningful phylogenetic tree.',
+              text: 'Select at least 3 sequences to construct a meaningful phylogenetic tree.',
             ),
           if (_tree != null) ...[
             Card(
@@ -152,18 +145,12 @@ class _PhyloTreeScreenState extends State<PhyloTreeScreen> {
                   children: [
                     const Text(
                       'Newick Format',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
                     ),
                     const SizedBox(height: 8),
                     SelectableText(
                       _tree!.root.toNewick(),
-                      style: const TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 11.5,
-                      ),
+                      style: const TextStyle(fontFamily: 'monospace', fontSize: 11.5),
                     ),
                     const SizedBox(height: 4),
                     const Text(

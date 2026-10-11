@@ -98,19 +98,14 @@ class _Structure3DScreenState extends State<Structure3DScreen> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final selectedSeq = _selectedId != null
-        ? appState.getSequenceById(_selectedId!)
-        : null;
+    final selectedSeq = _selectedId != null ? appState.getSequenceById(_selectedId!) : null;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('3D Structure & Stability'),
         actions: [
           if (_stability != null)
-            ExportMenuButton(
-              reportBuilder: _buildReport,
-              moduleType: '3D Structure',
-            ),
+            ExportMenuButton(reportBuilder: _buildReport, moduleType: '3D Structure'),
           const SizedBox(width: 8),
         ],
       ),
@@ -122,18 +117,12 @@ class _Structure3DScreenState extends State<Structure3DScreen> {
             decoration: BoxDecoration(
               color: AppColors.gradStructure3D.first.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.gradStructure3D.first.withValues(alpha: 0.25),
-              ),
+              border: Border.all(color: AppColors.gradStructure3D.first.withValues(alpha: 0.25)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 18,
-                  color: AppColors.gradStructure3D.first,
-                ),
+                Icon(Icons.info_outline, size: 18, color: AppColors.gradStructure3D.first),
                 const SizedBox(width: 10),
                 const Expanded(
                   child: Text(
@@ -161,9 +150,7 @@ class _Structure3DScreenState extends State<Structure3DScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: selectedSeq == null
-                  ? null
-                  : () => _generate(selectedSeq),
+              onPressed: selectedSeq == null ? null : () => _generate(selectedSeq),
               icon: const Icon(Icons.view_in_ar_rounded),
               label: const Text('Generate 3D Model'),
             ),
@@ -210,10 +197,7 @@ class _Structure3DResultView extends StatelessWidget {
         if (note.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
-            child: Text(
-              note,
-              style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
-            ),
+            child: Text(note, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
           ),
         Structure3DView(structure: structure),
         const SizedBox(height: 8),
@@ -249,17 +233,11 @@ class _Structure3DResultView extends StatelessWidget {
                   children: [
                     const Text(
                       'Stability Assessment',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
                     ),
                     const SizedBox(width: 10),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: _assessmentColor(
                           stability.overallAssessment,
@@ -289,11 +267,7 @@ class _Structure3DResultView extends StatelessWidget {
                         AppColors.gradStructure3D.first,
                       ),
                     if (stability.gravy != null)
-                      _metric(
-                        'GRAVY',
-                        stability.gravy!.toStringAsFixed(2),
-                        AppColors.primaryBlue,
-                      ),
+                      _metric('GRAVY', stability.gravy!.toStringAsFixed(2), AppColors.primaryBlue),
                     if (stability.aliphaticIndex != null)
                       _metric(
                         'Aliphatic idx.',
@@ -316,18 +290,11 @@ class _Structure3DResultView extends StatelessWidget {
                       children: [
                         const Padding(
                           padding: EdgeInsets.only(top: 4),
-                          child: Icon(
-                            Icons.circle,
-                            size: 6,
-                            color: AppColors.textMuted,
-                          ),
+                          child: Icon(Icons.circle, size: 6, color: AppColors.textMuted),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: Text(
-                            o,
-                            style: const TextStyle(fontSize: 12.5, height: 1.4),
-                          ),
+                          child: Text(o, style: const TextStyle(fontSize: 12.5, height: 1.4)),
                         ),
                       ],
                     ),
@@ -367,11 +334,7 @@ class _Structure3DResultView extends StatelessWidget {
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 15,
-              color: color,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: color),
           ),
           Text(label, style: TextStyle(fontSize: 10.5, color: color)),
         ],

@@ -211,9 +211,7 @@ class ProteomicsEngine {
       for (int j = start; j <= end; j++) {
         counts[raw[j]] = (counts[raw[j]] ?? 0) + 1;
       }
-      smoothed[i] = counts.entries
-          .reduce((a, b) => a.value >= b.value ? a : b)
-          .key;
+      smoothed[i] = counts.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
     }
     return smoothed;
   }

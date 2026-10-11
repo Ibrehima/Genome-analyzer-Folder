@@ -11,10 +11,7 @@ import 'txt_export.dart';
 /// Unified export facade: generates bytes for the requested format and
 /// triggers a cross-platform (Web + Android) file save/download.
 class ExportEngine {
-  static Future<Uint8List> generateBytes(
-    ReportData data,
-    ExportFormat format,
-  ) async {
+  static Future<Uint8List> generateBytes(ReportData data, ExportFormat format) async {
     switch (format) {
       case ExportFormat.pdf:
         return await PdfExportEngine.generate(data);

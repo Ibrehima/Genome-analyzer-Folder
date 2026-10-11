@@ -69,27 +69,17 @@ class ReportsScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.folder_open_rounded,
-                      size: 64,
-                      color: Color(0xFFFFCC80),
-                    ),
+                    const Icon(Icons.folder_open_rounded, size: 64, color: Color(0xFFFFCC80)),
                     const SizedBox(height: 16),
                     const Text(
                       'No reports yet',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 6),
                     const Text(
                       'Run any analysis module and tap "Export" to generate PDF, Word, PowerPoint or Excel reports. They will show up here.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                     ),
                   ],
                 ),
@@ -104,21 +94,12 @@ class ReportsScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 10),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: _color(
-                        item.format,
-                      ).withValues(alpha: 0.15),
-                      child: Icon(
-                        _icon(item.format),
-                        color: _color(item.format),
-                        size: 20,
-                      ),
+                      backgroundColor: _color(item.format).withValues(alpha: 0.15),
+                      child: Icon(_icon(item.format), color: _color(item.format), size: 20),
                     ),
                     title: Text(
                       item.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13.5,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
                     ),
                     subtitle: Text(
                       '${item.moduleType} · ${_formatLabel(item.format)} · ${item.createdAt.toString().substring(0, 16)}',

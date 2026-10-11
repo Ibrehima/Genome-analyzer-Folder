@@ -32,8 +32,7 @@ class MetaboliteDatabase {
       formula: 'C3H4O3',
       metaboliteClass: 'Organic acid',
       pathway: 'Glycolysis / TCA cycle entry',
-      description:
-          'End product of glycolysis; converted to acetyl-CoA or lactate.',
+      description: 'End product of glycolysis; converted to acetyl-CoA or lactate.',
     ),
     MetaboliteRecord(
       id: 'MET004',
@@ -41,8 +40,7 @@ class MetaboliteDatabase {
       formula: 'C3H6O3',
       metaboliteClass: 'Organic acid',
       pathway: 'Anaerobic glycolysis',
-      description:
-          'Produced from pyruvate under low-oxygen conditions (e.g. muscle exertion).',
+      description: 'Produced from pyruvate under low-oxygen conditions (e.g. muscle exertion).',
     ),
     MetaboliteRecord(
       id: 'MET005',
@@ -50,8 +48,7 @@ class MetaboliteDatabase {
       formula: 'C6H8O7',
       metaboliteClass: 'Organic acid',
       pathway: 'TCA cycle',
-      description:
-          'First stable intermediate of the citric acid (Krebs) cycle.',
+      description: 'First stable intermediate of the citric acid (Krebs) cycle.',
     ),
     MetaboliteRecord(
       id: 'MET006',
@@ -59,8 +56,7 @@ class MetaboliteDatabase {
       formula: 'C4H6O4',
       metaboliteClass: 'Organic acid',
       pathway: 'TCA cycle',
-      description:
-          'TCA cycle intermediate; oxidized by succinate dehydrogenase (Complex II).',
+      description: 'TCA cycle intermediate; oxidized by succinate dehydrogenase (Complex II).',
     ),
     MetaboliteRecord(
       id: 'MET007',
@@ -84,8 +80,7 @@ class MetaboliteDatabase {
       formula: 'C4H4O5',
       metaboliteClass: 'Organic acid',
       pathway: 'TCA cycle',
-      description:
-          'Combines with acetyl-CoA to regenerate citrate, closing the TCA cycle.',
+      description: 'Combines with acetyl-CoA to regenerate citrate, closing the TCA cycle.',
     ),
     MetaboliteRecord(
       id: 'MET010',
@@ -93,8 +88,7 @@ class MetaboliteDatabase {
       formula: 'C5H6O5',
       metaboliteClass: 'Organic acid',
       pathway: 'TCA cycle / Amino acid metabolism',
-      description:
-          'TCA cycle intermediate and key nitrogen-transfer hub (transamination).',
+      description: 'TCA cycle intermediate and key nitrogen-transfer hub (transamination).',
     ),
     MetaboliteRecord(
       id: 'MET011',
@@ -110,8 +104,7 @@ class MetaboliteDatabase {
       formula: 'C10H15N5O10P2',
       metaboliteClass: 'Nucleotide',
       pathway: 'Energy metabolism',
-      description:
-          'Adenosine diphosphate; regenerated to ATP via oxidative phosphorylation.',
+      description: 'Adenosine diphosphate; regenerated to ATP via oxidative phosphorylation.',
     ),
     MetaboliteRecord(
       id: 'MET013',
@@ -119,8 +112,7 @@ class MetaboliteDatabase {
       formula: 'C10H14N5O7P',
       metaboliteClass: 'Nucleotide',
       pathway: 'Energy metabolism / Nucleotide metabolism',
-      description:
-          'Adenosine monophosphate; energy-charge / AMPK signaling indicator.',
+      description: 'Adenosine monophosphate; energy-charge / AMPK signaling indicator.',
     ),
     MetaboliteRecord(
       id: 'MET014',
@@ -128,8 +120,7 @@ class MetaboliteDatabase {
       formula: 'C21H27N7O14P2',
       metaboliteClass: 'Cofactor',
       pathway: 'Redox metabolism',
-      description:
-          'Key redox cofactor (oxidized form) shuttling electrons in catabolism.',
+      description: 'Key redox cofactor (oxidized form) shuttling electrons in catabolism.',
     ),
     MetaboliteRecord(
       id: 'MET015',
@@ -137,8 +128,7 @@ class MetaboliteDatabase {
       formula: 'CH4N2O',
       metaboliteClass: 'Nitrogen waste product',
       pathway: 'Urea cycle',
-      description:
-          'Major excreted nitrogen-waste product of amino-acid catabolism.',
+      description: 'Major excreted nitrogen-waste product of amino-acid catabolism.',
     ),
     MetaboliteRecord(
       id: 'MET016',
@@ -146,8 +136,7 @@ class MetaboliteDatabase {
       formula: 'C4H7N3O',
       metaboliteClass: 'Nitrogen waste product',
       pathway: 'Muscle / creatine metabolism',
-      description:
-          'Breakdown product of creatine phosphate; standard renal-function marker.',
+      description: 'Breakdown product of creatine phosphate; standard renal-function marker.',
     ),
     MetaboliteRecord(
       id: 'MET017',
@@ -155,8 +144,7 @@ class MetaboliteDatabase {
       formula: 'C4H9N3O2',
       metaboliteClass: 'Amino-acid derivative',
       pathway: 'Energy buffering (phosphocreatine system)',
-      description:
-          'Buffers cellular ATP levels via the creatine phosphate shuttle.',
+      description: 'Buffers cellular ATP levels via the creatine phosphate shuttle.',
     ),
     MetaboliteRecord(
       id: 'MET018',
@@ -164,8 +152,7 @@ class MetaboliteDatabase {
       formula: 'C5H4N4O3',
       metaboliteClass: 'Purine catabolite',
       pathway: 'Purine metabolism',
-      description:
-          'Final oxidation product of purine (adenine/guanine) breakdown in humans.',
+      description: 'Final oxidation product of purine (adenine/guanine) breakdown in humans.',
     ),
     MetaboliteRecord(
       id: 'MET019',
@@ -173,8 +160,7 @@ class MetaboliteDatabase {
       formula: 'C2H5NO2',
       metaboliteClass: 'Amino acid',
       pathway: 'Protein synthesis / One-carbon metabolism',
-      description:
-          'Smallest amino acid; also a precursor for glutathione, heme and purines.',
+      description: 'Smallest amino acid; also a precursor for glutathione, heme and purines.',
     ),
     MetaboliteRecord(
       id: 'MET020',
@@ -182,8 +168,7 @@ class MetaboliteDatabase {
       formula: 'C3H7NO2',
       metaboliteClass: 'Amino acid',
       pathway: 'Amino acid metabolism / Glucose-alanine cycle',
-      description:
-          'Shuttles nitrogen from muscle to liver (glucose-alanine cycle).',
+      description: 'Shuttles nitrogen from muscle to liver (glucose-alanine cycle).',
     ),
     MetaboliteRecord(
       id: 'MET021',
@@ -200,8 +185,7 @@ class MetaboliteDatabase {
       formula: 'C5H10N2O3',
       metaboliteClass: 'Amino acid',
       pathway: 'Nitrogen transport',
-      description:
-          'Main carrier of ammonia between tissues; abundant free amino acid in blood.',
+      description: 'Main carrier of ammonia between tissues; abundant free amino acid in blood.',
     ),
     MetaboliteRecord(
       id: 'MET023',
@@ -218,8 +202,7 @@ class MetaboliteDatabase {
       formula: 'C27H46O',
       metaboliteClass: 'Lipid (sterol)',
       pathway: 'Steroid / membrane lipid metabolism',
-      description:
-          'Membrane lipid and precursor of steroid hormones and bile acids.',
+      description: 'Membrane lipid and precursor of steroid hormones and bile acids.',
     ),
     MetaboliteRecord(
       id: 'MET025',
@@ -236,8 +219,7 @@ class MetaboliteDatabase {
       formula: 'C3H8O3',
       metaboliteClass: 'Lipid backbone',
       pathway: 'Lipid metabolism / Gluconeogenesis',
-      description:
-          'Triglyceride backbone released during lipolysis; gluconeogenic substrate.',
+      description: 'Triglyceride backbone released during lipolysis; gluconeogenic substrate.',
     ),
     MetaboliteRecord(
       id: 'MET027',
@@ -245,8 +227,7 @@ class MetaboliteDatabase {
       formula: 'C2H6O',
       metaboliteClass: 'Small alcohol',
       pathway: 'Alcohol metabolism',
-      description:
-          'Metabolized to acetaldehyde then acetate via alcohol/aldehyde dehydrogenase.',
+      description: 'Metabolized to acetaldehyde then acetate via alcohol/aldehyde dehydrogenase.',
     ),
     MetaboliteRecord(
       id: 'MET028',
@@ -254,8 +235,7 @@ class MetaboliteDatabase {
       formula: 'C2H4O2',
       metaboliteClass: 'Short-chain fatty acid',
       pathway: 'Fatty-acid synthesis / short-chain fatty acid metabolism',
-      description:
-          'Simple 2-carbon acid; activated to acetyl-CoA for energy or lipid synthesis.',
+      description: 'Simple 2-carbon acid; activated to acetyl-CoA for energy or lipid synthesis.',
     ),
     MetaboliteRecord(
       id: 'MET029',
@@ -279,8 +259,7 @@ class MetaboliteDatabase {
       formula: 'C5H9N3',
       metaboliteClass: 'Biogenic amine',
       pathway: 'Histidine metabolism',
-      description:
-          'Mediator of immune/allergic responses, derived from histidine decarboxylation.',
+      description: 'Mediator of immune/allergic responses, derived from histidine decarboxylation.',
     ),
     MetaboliteRecord(
       id: 'MET032',

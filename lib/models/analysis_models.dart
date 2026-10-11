@@ -173,12 +173,7 @@ extension GapModelLabel on GapModel {
 }
 
 /// Substitution scoring scheme.
-enum SubstitutionMatrixType {
-  simple,
-  dnaTransitionTransversion,
-  blosum62,
-  pam250,
-}
+enum SubstitutionMatrixType { simple, dnaTransitionTransversion, blosum62, pam250 }
 
 extension SubstitutionMatrixLabel on SubstitutionMatrixType {
   String get label {
@@ -195,8 +190,7 @@ extension SubstitutionMatrixLabel on SubstitutionMatrixType {
   }
 
   bool get isProteinMatrix =>
-      this == SubstitutionMatrixType.blosum62 ||
-      this == SubstitutionMatrixType.pam250;
+      this == SubstitutionMatrixType.blosum62 || this == SubstitutionMatrixType.pam250;
 }
 
 /// Multiple-sequence-alignment construction method.
@@ -252,8 +246,7 @@ class AlignmentOptions {
   final int bandWidth;
   final int bandLengthThreshold; // min sequence length before banding kicks in
   final int seedLength; // seed-and-extend heuristic: exact-match seed size
-  final int
-  extendWindow; // seed-and-extend heuristic: flank re-aligned around each seed
+  final int extendWindow; // seed-and-extend heuristic: flank re-aligned around each seed
   final int refinementIterations; // MUSCLE-style MSA: max refinement passes
 
   const AlignmentOptions({
@@ -401,11 +394,7 @@ class PhyloTreeResult {
   final String method; // UPGMA / Neighbor-Joining
   final List<String> leafNames;
 
-  PhyloTreeResult({
-    required this.root,
-    required this.method,
-    required this.leafNames,
-  });
+  PhyloTreeResult({required this.root, required this.method, required this.leafNames});
 }
 
 /// ---------------- Species / Lineage / Variant Identification ----------------
@@ -413,8 +402,7 @@ class ReferenceRecord {
   final String id;
   final String scientificName;
   final String commonName;
-  final String
-  lineage; // e.g. Domain;Kingdom;Phylum;Class;Order;Family;Genus;Species
+  final String lineage; // e.g. Domain;Kingdom;Phylum;Class;Order;Family;Genus;Species
   final String markerGene; // e.g. 16S rRNA, COI, ITS, rbcL
   final String sequence;
 
@@ -559,20 +547,19 @@ class ReportHistoryItem {
     'summary': summary,
   };
 
-  factory ReportHistoryItem.fromJson(Map<String, dynamic> json) =>
-      ReportHistoryItem(
-        id: json['id'] as String?,
-        title: json['title'] as String? ?? '',
-        moduleType: json['moduleType'] as String? ?? '',
-        format: ExportFormat.values.firstWhere(
-          (e) => e.name == (json['format'] as String? ?? 'pdf'),
-          orElse: () => ExportFormat.pdf,
-        ),
-        createdAt: json['createdAt'] != null
-            ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
-            : DateTime.now(),
-        summary: json['summary'] as String? ?? '',
-      );
+  factory ReportHistoryItem.fromJson(Map<String, dynamic> json) => ReportHistoryItem(
+    id: json['id'] as String?,
+    title: json['title'] as String? ?? '',
+    moduleType: json['moduleType'] as String? ?? '',
+    format: ExportFormat.values.firstWhere(
+      (e) => e.name == (json['format'] as String? ?? 'pdf'),
+      orElse: () => ExportFormat.pdf,
+    ),
+    createdAt: json['createdAt'] != null
+        ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
+        : DateTime.now(),
+    summary: json['summary'] as String? ?? '',
+  );
 }
 
 /// ---------------- Raw Sequencing Data Processing ----------------
@@ -762,20 +749,19 @@ class SequenceAnnotation {
     'createdAt': createdAt.toIso8601String(),
   };
 
-  factory SequenceAnnotation.fromJson(Map<String, dynamic> json) =>
-      SequenceAnnotation(
-        id: json['id'] as String?,
-        sequenceId: json['sequenceId'] as String? ?? '',
-        start: json['start'] as int? ?? 0,
-        end: json['end'] as int? ?? 0,
-        label: json['label'] as String? ?? '',
-        featureType: json['featureType'] as String? ?? 'custom',
-        forwardStrand: json['forwardStrand'] as bool? ?? true,
-        note: json['note'] as String? ?? '',
-        createdAt: json['createdAt'] != null
-            ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
-            : DateTime.now(),
-      );
+  factory SequenceAnnotation.fromJson(Map<String, dynamic> json) => SequenceAnnotation(
+    id: json['id'] as String?,
+    sequenceId: json['sequenceId'] as String? ?? '',
+    start: json['start'] as int? ?? 0,
+    end: json['end'] as int? ?? 0,
+    label: json['label'] as String? ?? '',
+    featureType: json['featureType'] as String? ?? 'custom',
+    forwardStrand: json['forwardStrand'] as bool? ?? true,
+    note: json['note'] as String? ?? '',
+    createdAt: json['createdAt'] != null
+        ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
+        : DateTime.now(),
+  );
 }
 
 /// ---------------- 3D Structure & Stability ----------------
@@ -797,11 +783,7 @@ class Structure3DResult {
   final List<List<int>> bonds; // index pairs into atoms
   final String modelKind; // 'dna_helix' or 'protein_backbone'
 
-  Structure3DResult({
-    required this.atoms,
-    required this.bonds,
-    required this.modelKind,
-  });
+  Structure3DResult({required this.atoms, required this.bonds, required this.modelKind});
 }
 
 class StabilityReport {
@@ -829,11 +811,7 @@ class TransmembraneRegion {
   final int start;
   final int end;
   final double meanHydrophobicity;
-  TransmembraneRegion({
-    required this.start,
-    required this.end,
-    required this.meanHydrophobicity,
-  });
+  TransmembraneRegion({required this.start, required this.end, required this.meanHydrophobicity});
 }
 
 class EpitopeCandidate {
@@ -934,4 +912,346 @@ class MassSearchMatch {
     required this.deltaPpm,
     required this.adduct,
   });
+}
+
+/// ---------------- Contig Assembly ----------------
+
+/// Where one input read lands inside an assembled contig, used both to
+/// render a simple read-layout track and to compute per-base coverage.
+class ContigReadPlacement {
+  final String readName;
+  final int start; // 0-based offset into the contig consensus
+  final int end; // exclusive
+  final bool forwardStrand; // false if the reverse complement was used
+  final double overlapIdentity; // % identity of the overlap that placed it
+
+  ContigReadPlacement({
+    required this.readName,
+    required this.start,
+    required this.end,
+    this.forwardStrand = true,
+    this.overlapIdentity = 0,
+  });
+}
+
+/// One assembled contig: a consensus sequence built by greedily merging
+/// overlapping reads (classic OLC — Overlap-Layout-Consensus — approach,
+/// simplified for an offline/in-browser implementation).
+class AssembledContig {
+  final String id;
+  final String consensusSequence;
+  final List<ContigReadPlacement> reads;
+  final List<int> coveragePerBase; // same length as consensusSequence
+
+  AssembledContig({
+    String? id,
+    required this.consensusSequence,
+    required this.reads,
+    required this.coveragePerBase,
+  }) : id = id ?? const Uuid().v4();
+
+  int get length => consensusSequence.length;
+  double get meanCoverage => coveragePerBase.isEmpty
+      ? 0
+      : coveragePerBase.reduce((a, b) => a + b) / coveragePerBase.length;
+}
+
+/// Full result of a contig-assembly run: every contig produced plus any
+/// input reads that could not be merged into one (too short / no overlap
+/// found above the identity threshold — reported individually, not lost).
+class AssemblyResult {
+  final List<AssembledContig> contigs;
+  final List<String> unassembledReadNames;
+  final int inputReadCount;
+  final int n50;
+  final List<String> stepsLog;
+  final List<String> warnings;
+  final int elapsedMicros;
+
+  AssemblyResult({
+    required this.contigs,
+    this.unassembledReadNames = const [],
+    this.inputReadCount = 0,
+    this.n50 = 0,
+    this.stepsLog = const [],
+    this.warnings = const [],
+    this.elapsedMicros = 0,
+  });
+
+  double get elapsedMs => elapsedMicros / 1000.0;
+  int get totalAssembledBases => contigs.fold<int>(0, (a, c) => a + c.length);
+}
+
+/// ---------------- Generic Trimming (standalone module) ----------------
+
+/// A single trimming operation outcome for one read: how many bases were
+/// removed from each end and why, so users can audit the process.
+class TrimResult {
+  final BioSequence trimmedSequence;
+  final int originalLength;
+  final int trimmedFromStart;
+  final int trimmedFromEnd;
+  final bool discarded; // true if final length fell below the minimum
+  final String reason;
+
+  TrimResult({
+    required this.trimmedSequence,
+    required this.originalLength,
+    this.trimmedFromStart = 0,
+    this.trimmedFromEnd = 0,
+    this.discarded = false,
+    this.reason = '',
+  });
+
+  int get totalTrimmed => trimmedFromStart + trimmedFromEnd;
+}
+
+class TrimBatchResult {
+  final List<TrimResult> results;
+  final List<String> stepsLog;
+
+  TrimBatchResult({required this.results, this.stepsLog = const []});
+
+  List<BioSequence> get keptSequences =>
+      results.where((r) => !r.discarded).map((r) => r.trimmedSequence).toList();
+  int get discardedCount => results.where((r) => r.discarded).length;
+  int get totalBasesTrimmed => results.fold<int>(0, (a, r) => a + r.totalTrimmed);
+}
+
+/// ---------------- Standalone Demultiplexing ----------------
+class DemuxResultEntry {
+  final String sampleName; // '' for the unassigned bucket
+  final List<BioSequence> reads;
+  DemuxResultEntry({required this.sampleName, required this.reads});
+}
+
+class DemuxBatchResult {
+  final List<DemuxResultEntry> perSample;
+  final int totalReads;
+  final int assignedReads;
+  final List<String> stepsLog;
+
+  DemuxBatchResult({
+    required this.perSample,
+    required this.totalReads,
+    required this.assignedReads,
+    this.stepsLog = const [],
+  });
+
+  int get unassignedReads => totalReads - assignedReads;
+}
+
+/// ---------------- Genome Map ----------------
+
+/// Overall rendering shape for the genome/sequence map.
+enum GenomeMapShape { circular, linear }
+
+extension GenomeMapShapeLabel on GenomeMapShape {
+  String get label {
+    switch (this) {
+      case GenomeMapShape.circular:
+        return 'Circular (plasmid-style)';
+      case GenomeMapShape.linear:
+        return 'Linear (genome browser-style)';
+    }
+  }
+}
+
+/// A single drawable feature/track entry on the genome map: gene/CDS/ORF
+/// annotations, mutation markers, GC-skew bins, or any custom region. Kept
+/// Flutter-independent (no [Color] here) — the widget layer maps
+/// [category] to a color so this model stays reusable/testable.
+class GenomeMapFeature {
+  final String label;
+  final int start; // 0-based, inclusive
+  final int end; // exclusive
+  final bool forwardStrand;
+  final String
+  category; // 'gene' | 'CDS' | 'ORF' | 'motif' | 'snp' | 'insertion' | 'deletion' | 'custom'
+  final String note;
+
+  GenomeMapFeature({
+    required this.label,
+    required this.start,
+    required this.end,
+    this.forwardStrand = true,
+    this.category = 'custom',
+    this.note = '',
+  });
+
+  int get length => (end - start).abs().clamp(1, 1 << 30);
+}
+
+/// Everything needed to render one genome map: the backbone length plus
+/// every feature to plot on top of it (annotations, ORFs, mutations...).
+class GenomeMapData {
+  final String sequenceName;
+  final int sequenceLength;
+  final double gcContent;
+  final List<GenomeMapFeature> features;
+
+  GenomeMapData({
+    required this.sequenceName,
+    required this.sequenceLength,
+    this.gcContent = 0,
+    this.features = const [],
+  });
+}
+
+/// ---------------- Mutation Detection & Characterization ----------------
+
+/// Broad category of a detected sequence variant.
+enum MutationType { substitution, insertion, deletion }
+
+extension MutationTypeLabel on MutationType {
+  String get label {
+    switch (this) {
+      case MutationType.substitution:
+        return 'Substitution (SNP/MNP)';
+      case MutationType.insertion:
+        return 'Insertion';
+      case MutationType.deletion:
+        return 'Deletion';
+    }
+  }
+
+  String get shortLabel {
+    switch (this) {
+      case MutationType.substitution:
+        return 'SUB';
+      case MutationType.insertion:
+        return 'INS';
+      case MutationType.deletion:
+        return 'DEL';
+    }
+  }
+}
+
+/// Predicted functional impact of a mutation, when a coding frame is known
+/// (requires the reference to be annotated/assumed as a CDS starting at
+/// position 0 for the simplified codon-impact classifier).
+enum MutationImpact { synonymous, missense, nonsense, frameshift, inFrameIndel, nonCoding, unknown }
+
+extension MutationImpactLabel on MutationImpact {
+  String get label {
+    switch (this) {
+      case MutationImpact.synonymous:
+        return 'Synonymous (silent)';
+      case MutationImpact.missense:
+        return 'Missense (amino acid change)';
+      case MutationImpact.nonsense:
+        return 'Nonsense (premature stop)';
+      case MutationImpact.frameshift:
+        return 'Frameshift';
+      case MutationImpact.inFrameIndel:
+        return 'In-frame indel';
+      case MutationImpact.nonCoding:
+        return 'Non-coding / not in analyzed CDS';
+      case MutationImpact.unknown:
+        return 'Unknown / not evaluated';
+    }
+  }
+}
+
+/// A single, fully characterized mutation call between a reference and a
+/// query sequence (already aligned). Adjacent single-base diffs of the same
+/// type are merged into one block-level event (e.g. a 3bp deletion is one
+/// [MutationRecord], not three), matching how real variant callers report
+/// indels.
+class MutationRecord {
+  final String id;
+  // Positions are 0-based, expressed in *reference* (ungapped) coordinates.
+  final int refStart;
+  final int refEnd; // exclusive; refStart == refEnd for pure insertions
+  final String refAllele; // '-' for insertions
+  final String altAllele; // '-' for deletions
+  final MutationType type;
+  final bool isTransition; // only meaningful for single-base substitutions
+  final MutationImpact impact;
+  final String? refCodon;
+  final String? altCodon;
+  final String? refAminoAcid; // 1-letter code, or '*' for stop
+  final String? altAminoAcid;
+  final int? aminoAcidPosition; // 1-based, when impact was evaluated
+
+  MutationRecord({
+    String? id,
+    required this.refStart,
+    required this.refEnd,
+    required this.refAllele,
+    required this.altAllele,
+    required this.type,
+    this.isTransition = false,
+    this.impact = MutationImpact.unknown,
+    this.refCodon,
+    this.altCodon,
+    this.refAminoAcid,
+    this.altAminoAcid,
+    this.aminoAcidPosition,
+  }) : id = id ?? const Uuid().v4();
+
+  /// HGVS-ish compact notation, e.g. "145A>G", "200_202del", "88_89insTT".
+  String get notation {
+    switch (type) {
+      case MutationType.substitution:
+        return '${refStart + 1}$refAllele>$altAllele';
+      case MutationType.deletion:
+        return refEnd - refStart == 1
+            ? '${refStart + 1}del$refAllele'
+            : '${refStart + 1}_${refEnd}del$refAllele';
+      case MutationType.insertion:
+        return '${refStart}_${refStart + 1}ins$altAllele';
+    }
+  }
+
+  String get proteinNotation {
+    if (refAminoAcid == null || altAminoAcid == null || aminoAcidPosition == null) {
+      return '';
+    }
+    return 'p.$refAminoAcid$aminoAcidPosition$altAminoAcid';
+  }
+}
+
+/// Aggregate result of a full mutation-detection run between a reference
+/// and a query (or a reference and every other row of an MSA).
+class MutationAnalysisResult {
+  final List<MutationRecord> mutations;
+  final int referenceLength;
+  final int queryLength;
+  final Map<MutationImpact, int> impactCounts;
+  final List<String> notes;
+
+  MutationAnalysisResult({
+    required this.mutations,
+    required this.referenceLength,
+    required this.queryLength,
+    this.impactCounts = const {},
+    this.notes = const [],
+  });
+
+  int get snpCount => mutations.where((m) => m.type == MutationType.substitution).length;
+  int get insertionCount => mutations.where((m) => m.type == MutationType.insertion).length;
+  int get deletionCount => mutations.where((m) => m.type == MutationType.deletion).length;
+  int get transitionCount =>
+      mutations.where((m) => m.type == MutationType.substitution && m.isTransition).length;
+  int get transversionCount =>
+      mutations.where((m) => m.type == MutationType.substitution && !m.isTransition).length;
+
+  /// Converts every call into [GenomeMapFeature]s so the result can be
+  /// plotted directly on a [GenomeMapData] (circular or linear).
+  List<GenomeMapFeature> toMapFeatures() => mutations
+      .map(
+        (m) => GenomeMapFeature(
+          label: m.notation,
+          start: m.refStart,
+          end: m.refEnd > m.refStart ? m.refEnd : m.refStart + 1,
+          category: m.type == MutationType.substitution
+              ? 'snp'
+              : m.type == MutationType.insertion
+              ? 'insertion'
+              : 'deletion',
+          note: m.impact.label,
+        ),
+      )
+      .toList();
 }

@@ -87,13 +87,7 @@ class SequenceLegend extends StatelessWidget {
                   color: e.$2,
                   margin: const EdgeInsets.only(right: 4),
                 ),
-                Text(
-                  e.$1,
-                  style: const TextStyle(
-                    fontSize: 11.5,
-                    color: Color(0xFF64748B),
-                  ),
-                ),
+                Text(e.$1, style: const TextStyle(fontSize: 11.5, color: Color(0xFF64748B))),
               ],
             ),
           )

@@ -74,12 +74,7 @@ class PrimerEngine {
     return RegExp(r'(A{5,}|T{5,}|G{5,}|C{5,})').hasMatch(primer);
   }
 
-  static double _scoreCandidate(
-    double gc,
-    double tm,
-    double hairpin,
-    double dimer,
-  ) {
+  static double _scoreCandidate(double gc, double tm, double hairpin, double dimer) {
     double score = 100;
     // Ideal GC 40-60%
     if (gc < 40 || gc > 60) score -= (gc < 40 ? 40 - gc : gc - 60) * 1.5;
@@ -135,17 +130,9 @@ class PrimerEngine {
     int maxProductSize = 1000,
     int maxPairs = 10,
   }) {
-    final fwdCandidates = scanCandidates(
-      template,
-      minLen: minLen,
-      maxLen: maxLen,
-    );
+    final fwdCandidates = scanCandidates(template, minLen: minLen, maxLen: maxLen);
     final rcTemplate = SequenceEngine.reverseComplement(template);
-    final revCandidatesRaw = scanCandidates(
-      rcTemplate,
-      minLen: minLen,
-      maxLen: maxLen,
-    );
+    final revCandidatesRaw = scanCandidates(rcTemplate, minLen: minLen, maxLen: maxLen);
 
     final List<PrimerPairResult> pairs = [];
     for (final fwd in fwdCandidates) {
@@ -159,8 +146,7 @@ class PrimerEngine {
         final tmDiff = (fwd.meltingTemp - revRaw.meltingTemp).abs();
         if (tmDiff > 5) continue;
         final crossDim = crossDimerRisk(fwd.sequence, revRaw.sequence);
-        final pairScore =
-            (fwd.score + revRaw.score) / 2 - tmDiff * 2 - crossDim * 15;
+        final pairScore = (fwd.score + revRaw.score) / 2 - tmDiff * 2 - crossDim * 15;
         pairs.add(
           PrimerPairResult(
             forward: fwd,

@@ -22,8 +22,7 @@ class OnlineToolsCatalog {
   static const List<OnlineTool> tools = [
     OnlineTool(
       name: 'NCBI BLAST',
-      description:
-          'Sequence similarity search against GenBank & RefSeq databases.',
+      description: 'Sequence similarity search against GenBank & RefSeq databases.',
       url: 'https://blast.ncbi.nlm.nih.gov/Blast.cgi',
       category: 'Alignment & Search',
       supportsAccount: true,
@@ -74,39 +73,34 @@ class OnlineToolsCatalog {
     ),
     OnlineTool(
       name: 'iTOL (Interactive Tree of Life)',
-      description:
-          'Upload a Newick tree for advanced phylogenetic visualization.',
+      description: 'Upload a Newick tree for advanced phylogenetic visualization.',
       url: 'https://itol.embl.de/',
       category: 'Phylogenetics',
       supportsAccount: true,
     ),
     OnlineTool(
       name: 'MEGA Software',
-      description:
-          'Desktop tool for advanced molecular evolutionary genetics analysis.',
+      description: 'Desktop tool for advanced molecular evolutionary genetics analysis.',
       url: 'https://www.megasoftware.net/',
       category: 'Phylogenetics',
     ),
     OnlineTool(
       name: 'BOLD Systems',
-      description:
-          'Barcode of Life Data System for species identification via DNA barcodes.',
+      description: 'Barcode of Life Data System for species identification via DNA barcodes.',
       url: 'https://www.boldsystems.org/',
       category: 'Species ID',
       supportsAccount: true,
     ),
     OnlineTool(
       name: 'GBIF',
-      description:
-          'Global Biodiversity Information Facility — species occurrence & taxonomy.',
+      description: 'Global Biodiversity Information Facility — species occurrence & taxonomy.',
       url: 'https://www.gbif.org/',
       category: 'Species ID',
       supportsAccount: true,
     ),
     OnlineTool(
       name: 'GISAID',
-      description:
-          'Viral genome sequence sharing (e.g. influenza, SARS-CoV-2 variants).',
+      description: 'Viral genome sequence sharing (e.g. influenza, SARS-CoV-2 variants).',
       url: 'https://gisaid.org/',
       category: 'Variants',
       supportsAccount: true,
@@ -119,21 +113,18 @@ class OnlineToolsCatalog {
     ),
     OnlineTool(
       name: 'FastQC (Babraham)',
-      description:
-          'Reference tool for high-throughput sequence quality control.',
+      description: 'Reference tool for high-throughput sequence quality control.',
       url: 'https://www.bioinformatics.babraham.ac.uk/projects/fastqc/',
       category: 'Quality Control',
     ),
     OnlineTool(
       name: 'Galaxy Project',
-      description:
-          'Web-based platform for accessible, reproducible bioinformatics workflows.',
+      description: 'Web-based platform for accessible, reproducible bioinformatics workflows.',
       url: 'https://usegalaxy.org/',
       category: 'Workflow Platform',
       supportsAccount: true,
     ),
   ];
 
-  static List<String> get categories =>
-      tools.map((t) => t.category).toSet().toList()..sort();
+  static List<String> get categories => tools.map((t) => t.category).toSet().toList()..sort();
 }

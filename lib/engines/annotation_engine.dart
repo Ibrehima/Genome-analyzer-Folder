@@ -38,12 +38,8 @@ class AnnotationEngine {
             if (foundStop) {
               final orfLen = j + 3 - i;
               if (orfLen >= minLengthNt) {
-                final protein = SequenceEngine.translate(
-                  seq.substring(i, j + 3),
-                );
-                final preview = protein.length > 60
-                    ? '${protein.substring(0, 60)}...'
-                    : protein;
+                final protein = SequenceEngine.translate(seq.substring(i, j + 3));
+                final preview = protein.length > 60 ? '${protein.substring(0, 60)}...' : protein;
                 results.add(
                   OrfResult(
                     start: i,
@@ -76,10 +72,7 @@ class AnnotationEngine {
     buf.writeln('##sequence-region $seqId');
     for (final a in annotations) {
       final strand = a.forwardStrand ? '+' : '-';
-      final attrParts = <String>[
-        'ID=${a.id}',
-        'Name=${Uri.encodeComponent(a.label)}',
-      ];
+      final attrParts = <String>['ID=${a.id}', 'Name=${Uri.encodeComponent(a.label)}'];
       if (a.note.isNotEmpty) {
         attrParts.add('Note=${Uri.encodeComponent(a.note)}');
       }

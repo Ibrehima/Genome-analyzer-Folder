@@ -21,6 +21,12 @@ import 'annotation_screen.dart';
 import 'structure3d_screen.dart';
 import 'target_analysis_screen.dart';
 import 'metabolomics_screen.dart';
+import 'projects_screen.dart';
+import 'contig_assembly_screen.dart';
+import 'demultiplexing_screen.dart';
+import 'trimming_screen.dart';
+import 'genome_map_screen.dart';
+import 'mutation_detection_screen.dart';
 
 /// Icon/tile density presets for the module grid — lets users on
 /// desktop/tablet screens re-size module icons as requested, persisted via
@@ -101,6 +107,13 @@ class HomeScreen extends StatelessWidget {
   List<List<_ModuleEntry>> _sections(BuildContext context) => [
     [
       _ModuleEntry(
+        title: 'Projects',
+        subtitle: 'Isolated workspaces for your sequences',
+        icon: Icons.folder_special_rounded,
+        gradient: AppColors.gradProjects,
+        builder: (_) => const ProjectsScreen(),
+      ),
+      _ModuleEntry(
         title: 'Sequence Library',
         subtitle: 'Upload, paste & manage FASTA/FASTQ',
         icon: Icons.dns_rounded,
@@ -113,6 +126,27 @@ class HomeScreen extends StatelessWidget {
         icon: Icons.memory_rounded,
         gradient: AppColors.gradSequencing,
         builder: (_) => const SequencingRawScreen(),
+      ),
+      _ModuleEntry(
+        title: 'Demultiplexing',
+        subtitle: 'Split pooled reads by sample barcode',
+        icon: Icons.call_split_rounded,
+        gradient: AppColors.gradDemux,
+        builder: (_) => const DemultiplexingScreen(),
+      ),
+      _ModuleEntry(
+        title: 'Trimming',
+        subtitle: 'Adapter, quality & length trimming',
+        icon: Icons.content_cut_rounded,
+        gradient: AppColors.gradTrim,
+        builder: (_) => const TrimmingScreen(),
+      ),
+      _ModuleEntry(
+        title: 'Contig Assembly',
+        subtitle: 'Overlap-layout-consensus read assembly',
+        icon: Icons.merge_type_rounded,
+        gradient: AppColors.gradAssembly,
+        builder: (_) => const ContigAssemblyScreen(),
       ),
       _ModuleEntry(
         title: 'Quality Control',
@@ -150,6 +184,20 @@ class HomeScreen extends StatelessWidget {
         icon: Icons.pets_rounded,
         gradient: AppColors.gradSpecies,
         builder: (_) => const SpeciesIdScreen(),
+      ),
+      _ModuleEntry(
+        title: 'Mutation Detection',
+        subtitle: 'SNP/indel calling, impact & annotated map',
+        icon: Icons.bug_report_rounded,
+        gradient: AppColors.gradMutation,
+        builder: (_) => const MutationDetectionScreen(),
+      ),
+      _ModuleEntry(
+        title: 'Genome Map',
+        subtitle: 'Circular or linear annotated sequence map',
+        icon: Icons.donut_large_rounded,
+        gradient: AppColors.gradGenomeMap,
+        builder: (_) => const GenomeMapScreen(),
       ),
     ],
     [
@@ -224,11 +272,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final seqCount = appState.sequences.length;
+    final seqCount = appState.sequencesInActiveProject.length;
     final reportCount = appState.reportHistory.length;
-    final density =
-        _densityPresets[appState.iconDensity] ??
-        _densityPresets['comfortable']!;
+    final density = _densityPresets[appState.iconDensity] ?? _densityPresets['comfortable']!;
     final sections = _sections(context);
 
     return Scaffold(
@@ -236,7 +282,15 @@ class HomeScreen extends StatelessWidget {
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
-              child: _HeroHeader(seqCount: seqCount, reportCount: reportCount),
+              child: _HeroHeader(
+                seqCount: seqCount,
+                reportCount: reportCount,
+                projectName: appState.activeProject.name,
+                onProjectTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProjectsScreen()),
+                ),
+              ),
             ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
@@ -259,8 +313,7 @@ class HomeScreen extends StatelessWidget {
                               children: [
                                 const Expanded(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Analysis Modules',
@@ -288,10 +341,7 @@ class HomeScreen extends StatelessWidget {
                             const SizedBox(height: 16),
                             for (int s = 0; s < sections.length; s++) ...[
                               Padding(
-                                padding: EdgeInsets.only(
-                                  bottom: 10,
-                                  top: s == 0 ? 0 : 22,
-                                ),
+                                padding: EdgeInsets.only(bottom: 10, top: s == 0 ? 0 : 22),
                                 child: Text(
                                   _sectionTitles[s],
                                   style: const TextStyle(
@@ -319,8 +369,7 @@ class HomeScreen extends StatelessWidget {
                                         iconBoxSize: density.iconBoxSize,
                                         iconSize: density.iconSize,
                                         titleFontSize: density.titleFontSize,
-                                        subtitleFontSize:
-                                            density.subtitleFontSize,
+                                        subtitleFontSize: density.subtitleFontSize,
                                         padding: density.padding,
                                         onTap: () => Navigator.push(
                                           context,
@@ -335,9 +384,7 @@ class HomeScreen extends StatelessWidget {
                             _AssistantBanner(
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (_) => const AssistantScreen(),
-                                ),
+                                MaterialPageRoute(builder: (_) => const AssistantScreen()),
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -345,9 +392,7 @@ class HomeScreen extends StatelessWidget {
                               count: reportCount,
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (_) => const ReportsScreen(),
-                                ),
+                                MaterialPageRoute(builder: (_) => const ReportsScreen()),
                               ),
                             ),
                           ],
@@ -389,11 +434,7 @@ class _DensitySelector extends StatelessWidget {
               color: selected ? AppColors.primaryBlue : Colors.transparent,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(
-              icon,
-              size: 17,
-              color: selected ? Colors.white : AppColors.textMuted,
-            ),
+            child: Icon(icon, size: 17, color: selected ? Colors.white : AppColors.textMuted),
           ),
         ),
       );
@@ -421,7 +462,14 @@ class _DensitySelector extends StatelessWidget {
 class _HeroHeader extends StatelessWidget {
   final int seqCount;
   final int reportCount;
-  const _HeroHeader({required this.seqCount, required this.reportCount});
+  final String projectName;
+  final VoidCallback onProjectTap;
+  const _HeroHeader({
+    required this.seqCount,
+    required this.reportCount,
+    required this.projectName,
+    required this.onProjectTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -453,11 +501,7 @@ class _HeroHeader extends StatelessWidget {
                       color: Colors.white.withValues(alpha: 0.18),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
-                      Icons.biotech,
-                      color: Colors.white,
-                      size: 22,
-                    ),
+                    child: const Icon(Icons.biotech, color: Colors.white, size: 22),
                   ),
                   const SizedBox(width: 10),
                   const Text(
@@ -473,7 +517,36 @@ class _HeroHeader extends StatelessWidget {
               const ConnectivityBadge(),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 10),
+          InkWell(
+            onTap: onProjectTap,
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.folder_rounded, color: Colors.white, size: 14),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Project: $projectName',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  const Icon(Icons.swap_horiz_rounded, color: Colors.white70, size: 14),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
           const Text(
             'Your all-in-one\nbioinformatics workbench',
             style: TextStyle(
@@ -486,17 +559,9 @@ class _HeroHeader extends StatelessWidget {
           const SizedBox(height: 14),
           Row(
             children: [
-              _StatChip(
-                label: 'Sequences',
-                value: '$seqCount',
-                icon: Icons.dns_rounded,
-              ),
+              _StatChip(label: 'Sequences', value: '$seqCount', icon: Icons.dns_rounded),
               const SizedBox(width: 10),
-              _StatChip(
-                label: 'Reports',
-                value: '$reportCount',
-                icon: Icons.description_rounded,
-              ),
+              _StatChip(label: 'Reports', value: '$reportCount', icon: Icons.description_rounded),
             ],
           ),
         ],
@@ -509,11 +574,7 @@ class _StatChip extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
-  const _StatChip({
-    required this.label,
-    required this.value,
-    required this.icon,
-  });
+  const _StatChip({required this.label, required this.value, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -529,17 +590,10 @@ class _StatChip extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-              fontSize: 15,
-            ),
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 15),
           ),
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white70, fontSize: 12),
-          ),
+          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
         ],
       ),
     );
@@ -626,11 +680,7 @@ class _ReportsShortcut extends StatelessWidget {
                 gradient: const LinearGradient(colors: AppColors.gradReports),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(
-                Icons.folder_copy_rounded,
-                color: Colors.white,
-                size: 22,
-              ),
+              child: const Icon(Icons.folder_copy_rounded, color: Colors.white, size: 22),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -643,19 +693,12 @@ class _ReportsShortcut extends StatelessWidget {
                   ),
                   Text(
                     '$count report${count == 1 ? '' : 's'} generated',
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
                   ),
                 ],
               ),
             ),
-            const Icon(
-              Icons.arrow_forward_ios,
-              size: 14,
-              color: AppColors.textMuted,
-            ),
+            const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textMuted),
           ],
         ),
       ),

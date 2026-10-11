@@ -20,7 +20,9 @@ class SequenceSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sequences = context.watch<AppState>().sequences;
+    // Scoped to the active project only, so running analyses in one
+    // project's workspace never shows/touches another project's sequences.
+    final sequences = context.watch<AppState>().sequencesInActiveProject;
 
     if (sequences.isEmpty) {
       return Container(
@@ -35,7 +37,8 @@ class SequenceSelector extends StatelessWidget {
             SizedBox(width: 10),
             Expanded(
               child: Text(
-                'No sequences in your library yet. Upload or paste one from the Library tab first.',
+                'No sequences in the current project yet. Upload or paste one '
+                'from the Library tab, or switch to another project.',
                 style: TextStyle(fontSize: 13),
               ),
             ),
@@ -77,16 +80,11 @@ class SequenceSelector extends StatelessWidget {
                 onChanged(next);
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 decoration: BoxDecoration(
                   color: selected ? const Color(0xFFE3F2FD) : Colors.white,
                   border: Border.all(
-                    color: selected
-                        ? const Color(0xFF1565C0)
-                        : Colors.grey.shade300,
+                    color: selected ? const Color(0xFF1565C0) : Colors.grey.shade300,
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -94,12 +92,8 @@ class SequenceSelector extends StatelessWidget {
                   children: [
                     Icon(
                       multiple
-                          ? (selected
-                                ? Icons.check_box
-                                : Icons.check_box_outline_blank)
-                          : (selected
-                                ? Icons.radio_button_checked
-                                : Icons.radio_button_off),
+                          ? (selected ? Icons.check_box : Icons.check_box_outline_blank)
+                          : (selected ? Icons.radio_button_checked : Icons.radio_button_off),
                       size: 20,
                       color: selected ? const Color(0xFF1565C0) : Colors.grey,
                     ),
@@ -110,17 +104,11 @@ class SequenceSelector extends StatelessWidget {
                         children: [
                           Text(
                             seq.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13.5,
-                            ),
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13.5),
                           ),
                           Text(
                             '${seq.type.label} · ${seq.length} bp${seq.hasQuality ? " · FASTQ" : ""}',
-                            style: const TextStyle(
-                              fontSize: 11.5,
-                              color: Color(0xFF64748B),
-                            ),
+                            style: const TextStyle(fontSize: 11.5, color: Color(0xFF64748B)),
                           ),
                         ],
                       ),

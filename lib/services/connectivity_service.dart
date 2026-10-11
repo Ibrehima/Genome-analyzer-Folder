@@ -24,11 +24,7 @@ class ConnectivityService extends ChangeNotifier {
     bool online = false;
     try {
       final response = await http
-          .get(
-            Uri.parse(
-              'https://api.gbif.org/v1/species/match?name=Homo%20sapiens',
-            ),
-          )
+          .get(Uri.parse('https://api.gbif.org/v1/species/match?name=Homo%20sapiens'))
           .timeout(const Duration(seconds: 5));
       online = response.statusCode >= 200 && response.statusCode < 400;
     } catch (_) {

@@ -42,8 +42,7 @@ class LampPrimerEngine {
     return opts.where((l) => l >= minLen && l <= maxLen).toList()..sort();
   }
 
-  static bool _hasRepeat(String s) =>
-      RegExp(r'(A{5,}|T{5,}|G{5,}|C{5,})').hasMatch(s);
+  static bool _hasRepeat(String s) => RegExp(r'(A{5,}|T{5,}|G{5,}|C{5,})').hasMatch(s);
 
   /// Basic acceptability filter shared by all 6 primer-region pieces.
   static bool _acceptable(String s) {
@@ -66,9 +65,7 @@ class LampPrimerEngine {
     if (start < 0 || start + len > template.length) return null;
     final region = template.substring(start, start + len);
     if (!_acceptable(region)) return null;
-    final oligo = useReverseComplement
-        ? SequenceEngine.reverseComplement(region)
-        : region;
+    final oligo = useReverseComplement ? SequenceEngine.reverseComplement(region) : region;
     return LampPrimerPiece(
       role: role,
       sequence: oligo,
@@ -272,11 +269,7 @@ class LampPrimerEngine {
     if (fSide == null) return results;
 
     // B-side must start after F-side finishes, with room for the core gap.
-    for (final coreSize in [
-      coreMin,
-      ((coreMin + coreMax) / 2).round(),
-      coreMax,
-    ]) {
+    for (final coreSize in [coreMin, ((coreMin + coreMax) / 2).round(), coreMax]) {
       final bZoneStart = fSide.tail.templateEnd + coreSize;
       if (bZoneStart >= template.length - (outerMinLen + innerMinLen * 2)) {
         continue;
@@ -319,20 +312,8 @@ class LampPrimerEngine {
       LampPrimerPiece? lb;
       final notes = <String>[];
       if (includeLoopPrimers) {
-        lf = _findLoopPrimer(
-          template,
-          f2.templateEnd,
-          f1c.templateStart,
-          'LF',
-          true,
-        );
-        lb = _findLoopPrimer(
-          template,
-          b1c.templateEnd,
-          b2.templateStart,
-          'LB',
-          false,
-        );
+        lf = _findLoopPrimer(template, f2.templateEnd, f1c.templateStart, 'LF', true);
+        lb = _findLoopPrimer(template, b1c.templateEnd, b2.templateStart, 'LB', false);
         if (lf == null || lb == null) {
           notes.add(
             'No suitable loop primer found in the current gaps — try a '
@@ -388,10 +369,5 @@ class _SideResult {
   final LampPrimerPiece inner;
   final LampPrimerPiece tail;
   final double score;
-  _SideResult({
-    required this.outer,
-    required this.inner,
-    required this.tail,
-    required this.score,
-  });
+  _SideResult({required this.outer, required this.inner, required this.tail, required this.score});
 }

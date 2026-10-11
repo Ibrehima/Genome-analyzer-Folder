@@ -53,9 +53,9 @@ class _SpeciesIdScreenState extends State<SpeciesIdScreen> {
     }
     if (!conn.isOnline) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No internet connection detected.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('No internet connection detected.')));
       }
       return;
     }
@@ -70,14 +70,7 @@ class _SpeciesIdScreenState extends State<SpeciesIdScreen> {
 
   ReportData _buildReport() {
     final rows = <List<String>>[
-      [
-        'Rank',
-        'Scientific Name',
-        'Common Name',
-        'Marker Gene',
-        'Similarity %',
-        'Confidence',
-      ],
+      ['Rank', 'Scientific Name', 'Common Name', 'Marker Gene', 'Similarity %', 'Confidence'],
     ];
     for (int i = 0; i < _matches.length; i++) {
       final m = _matches[i];
@@ -129,10 +122,7 @@ class _SpeciesIdScreenState extends State<SpeciesIdScreen> {
         title: const Text('Species / Variant ID'),
         actions: [
           if (_matches.isNotEmpty)
-            ExportMenuButton(
-              reportBuilder: _buildReport,
-              moduleType: 'Species Identification',
-            ),
+            ExportMenuButton(reportBuilder: _buildReport, moduleType: 'Species Identification'),
           const SizedBox(width: 8),
         ],
       ),
@@ -153,16 +143,11 @@ class _SpeciesIdScreenState extends State<SpeciesIdScreen> {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.pets_rounded),
               label: Text(
-                _running
-                    ? 'Matching against local database...'
-                    : 'Identify Species / Lineage',
+                _running ? 'Matching against local database...' : 'Identify Species / Lineage',
               ),
             ),
           ),
@@ -178,9 +163,7 @@ class _SpeciesIdScreenState extends State<SpeciesIdScreen> {
           const SizedBox(height: 20),
           if (_domainResult != null) _DomainCard(result: _domainResult!),
           if (_domainResult != null) const SizedBox(height: 14),
-          ..._matches.asMap().entries.map(
-            (e) => _MatchCard(rank: e.key + 1, match: e.value),
-          ),
+          ..._matches.asMap().entries.map((e) => _MatchCard(rank: e.key + 1, match: e.value)),
           if (_matches.isNotEmpty) ...[
             const SizedBox(height: 8),
             OutlinedButton.icon(
@@ -193,13 +176,10 @@ class _SpeciesIdScreenState extends State<SpeciesIdScreen> {
                     )
                   : const Icon(Icons.public),
               label: Text(
-                _onlineChecking
-                    ? 'Checking GBIF...'
-                    : 'Cross-check best match online (GBIF)',
+                _onlineChecking ? 'Checking GBIF...' : 'Cross-check best match online (GBIF)',
               ),
             ),
-            if (_onlineResult != null)
-              _OnlineResultCard(result: _onlineResult!),
+            if (_onlineResult != null) _OnlineResultCard(result: _onlineResult!),
           ],
         ],
       ),
@@ -248,11 +228,7 @@ class _DomainCard extends StatelessWidget {
               color: Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              _iconFor(result.domainLabel),
-              color: Colors.white,
-              size: 22,
-            ),
+            child: Icon(_iconFor(result.domainLabel), color: Colors.white, size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -276,10 +252,7 @@ class _DomainCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  result.basis,
-                  style: const TextStyle(color: Colors.white70, fontSize: 11.5),
-                ),
+                Text(result.basis, style: const TextStyle(color: Colors.white70, fontSize: 11.5)),
               ],
             ),
           ),
@@ -339,9 +312,7 @@ class _MatchCard extends StatelessWidget {
                     '$rank',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
-                      color: rank == 1
-                          ? AppColors.success
-                          : Colors.grey.shade700,
+                      color: rank == 1 ? AppColors.success : Colors.grey.shade700,
                       fontSize: 12,
                     ),
                   ),
@@ -361,10 +332,7 @@ class _MatchCard extends StatelessWidget {
                       ),
                       Text(
                         '${ref.commonName} · ${ref.markerGene}',
-                        style: const TextStyle(
-                          fontSize: 11.5,
-                          color: AppColors.textMuted,
-                        ),
+                        style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted),
                       ),
                     ],
                   ),
@@ -374,18 +342,11 @@ class _MatchCard extends StatelessWidget {
                   children: [
                     Text(
                       '${match.similarityPercent.toStringAsFixed(1)}%',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
                     ),
                     Text(
                       conf,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: confColor,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: TextStyle(fontSize: 10, color: confColor, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -443,10 +404,7 @@ class _OnlineResultCard extends StatelessWidget {
               SizedBox(width: 8),
               Text(
                 'GBIF Live Cross-Check',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
               ),
             ],
           ),

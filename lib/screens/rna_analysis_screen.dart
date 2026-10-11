@@ -58,20 +58,14 @@ class _RnaAnalysisScreenState extends State<RnaAnalysisScreen> {
       title: 'RNA Analysis Report',
       subtitle: _rnaName ?? '',
       sections: [
-        ReportSection(
-          title: 'Transcription',
-          bodyText: 'mRNA sequence (5\'->3\'):\n$_rnaSequence',
-        ),
+        ReportSection(title: 'Transcription', bodyText: 'mRNA sequence (5\'->3\'):\n$_rnaSequence'),
         ReportSection(
           title: 'RNA Class Identification (heuristic)',
           table: [
             ['Property', 'Value'],
             ['Predicted class', c.guess.label],
             ['Confidence', '${c.confidence.toStringAsFixed(0)}%'],
-            [
-              'Poly-A tail',
-              c.hasPolyATail ? '${c.polyALength} nt' : 'Not detected',
-            ],
+            ['Poly-A tail', c.hasPolyATail ? '${c.polyALength} nt' : 'Not detected'],
             ['ORF / coding potential', c.hasOrf ? 'Detected' : 'Not detected'],
           ],
           bullets: c.reasons,
@@ -96,19 +90,14 @@ class _RnaAnalysisScreenState extends State<RnaAnalysisScreen> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final selectedSeq = _selectedId != null
-        ? appState.getSequenceById(_selectedId!)
-        : null;
+    final selectedSeq = _selectedId != null ? appState.getSequenceById(_selectedId!) : null;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('RNA Analysis'),
         actions: [
           if (_classification != null)
-            ExportMenuButton(
-              reportBuilder: _buildReport,
-              moduleType: 'RNA Analysis',
-            ),
+            ExportMenuButton(reportBuilder: _buildReport, moduleType: 'RNA Analysis'),
           const SizedBox(width: 8),
         ],
       ),
@@ -146,30 +135,22 @@ class _RnaAnalysisScreenState extends State<RnaAnalysisScreen> {
                 ),
               ],
               selected: {_templateStrand},
-              onSelectionChanged: (v) =>
-                  setState(() => _templateStrand = v.first),
+              onSelectionChanged: (v) => setState(() => _templateStrand = v.first),
             ),
           ],
           const SizedBox(height: 18),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: selectedSeq == null || _running
-                  ? null
-                  : () => _prepareAndRun(selectedSeq),
+              onPressed: selectedSeq == null || _running ? null : () => _prepareAndRun(selectedSeq),
               icon: _running
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.biotech),
-              label: Text(
-                _running ? 'Analyzing...' : 'Transcribe & Analyze RNA',
-              ),
+              label: Text(_running ? 'Analyzing...' : 'Transcribe & Analyze RNA'),
             ),
           ),
           const SizedBox(height: 20),
@@ -219,10 +200,7 @@ class _RnaResultView extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   '${rnaSequence.length} nt · GC ${SequenceEngine.gcContent(rnaSequence).toStringAsFixed(1)}%',
-                  style: const TextStyle(
-                    fontSize: 11.5,
-                    color: AppColors.textMuted,
-                  ),
+                  style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted),
                 ),
               ],
             ),
@@ -240,21 +218,13 @@ class _RnaResultView extends StatelessWidget {
                     Expanded(
                       child: Text(
                         classification.guess.label,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 16,
-                        ),
+                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: confidenceColor(
-                          classification.confidence,
-                        ).withValues(alpha: 0.12),
+                        color: confidenceColor(classification.confidence).withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
@@ -285,15 +255,9 @@ class _RnaResultView extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
-                          Icons.info_outline,
-                          size: 14,
-                          color: AppColors.textMuted,
-                        ),
+                        const Icon(Icons.info_outline, size: 14, color: AppColors.textMuted),
                         const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(r, style: const TextStyle(fontSize: 12)),
-                        ),
+                        Expanded(child: Text(r, style: const TextStyle(fontSize: 12))),
                       ],
                     ),
                   ),
@@ -335,11 +299,7 @@ class _RnaResultView extends StatelessWidget {
                   spacing: 10,
                   children: [
                     Chip(label: Text('${fold.pairCount} base pairs')),
-                    Chip(
-                      label: Text(
-                        'Score: ${fold.pseudoFreeEnergy.toStringAsFixed(1)}',
-                      ),
-                    ),
+                    Chip(label: Text('Score: ${fold.pseudoFreeEnergy.toStringAsFixed(1)}')),
                     Chip(label: Text('${fold.sequence.length} nt analyzed')),
                   ],
                 ),

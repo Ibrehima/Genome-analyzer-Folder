@@ -45,10 +45,7 @@ class _PrimerDesignScreenState extends State<PrimerDesignScreen>
           controller: _tabController,
           tabs: const [
             Tab(text: 'PCR', icon: Icon(Icons.linear_scale_rounded, size: 20)),
-            Tab(
-              text: 'LAMP',
-              icon: Icon(Icons.all_inclusive_rounded, size: 20),
-            ),
+            Tab(text: 'LAMP', icon: Icon(Icons.all_inclusive_rounded, size: 20)),
           ],
         ),
       ),
@@ -132,8 +129,7 @@ class _PcrPrimerTabState extends State<_PcrPrimerTab> {
     }
     return ReportData(
       title: 'PCR Primer Design Report',
-      subtitle:
-          'Template: ${_templateName ?? ""} · ${_results.length} candidate pairs',
+      subtitle: 'Template: ${_templateName ?? ""} · ${_results.length} candidate pairs',
       sections: [
         ReportSection(
           title: 'Overview',
@@ -154,10 +150,7 @@ class _PcrPrimerTabState extends State<_PcrPrimerTab> {
         if (_results.isNotEmpty)
           Align(
             alignment: Alignment.centerRight,
-            child: ExportMenuButton(
-              reportBuilder: _buildReport,
-              moduleType: 'Primer Design (PCR)',
-            ),
+            child: ExportMenuButton(reportBuilder: _buildReport, moduleType: 'Primer Design (PCR)'),
           ),
         SequenceSelector(
           selectedIds: _selectedIds,
@@ -174,10 +167,7 @@ class _PcrPrimerTabState extends State<_PcrPrimerTab> {
           min: 15,
           max: 30,
           divisions: 15,
-          labels: RangeLabels(
-            '${_lenRange.start.round()}',
-            '${_lenRange.end.round()}',
-          ),
+          labels: RangeLabels('${_lenRange.start.round()}', '${_lenRange.end.round()}'),
           onChanged: (v) => setState(() => _lenRange = v),
         ),
         const SizedBox(height: 8),
@@ -190,10 +180,7 @@ class _PcrPrimerTabState extends State<_PcrPrimerTab> {
           min: 50,
           max: 1000,
           divisions: 19,
-          labels: RangeLabels(
-            '${_productRange.start.round()}',
-            '${_productRange.end.round()}',
-          ),
+          labels: RangeLabels('${_productRange.start.round()}', '${_productRange.end.round()}'),
           onChanged: (v) => setState(() => _productRange = v),
         ),
         const SizedBox(height: 16),
@@ -205,10 +192,7 @@ class _PcrPrimerTabState extends State<_PcrPrimerTab> {
                 ? const SizedBox(
                     width: 16,
                     height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                   )
                 : const Icon(Icons.biotech),
             label: Text(_running ? 'Designing primers...' : 'Design Primers'),
@@ -220,9 +204,7 @@ class _PcrPrimerTabState extends State<_PcrPrimerTab> {
             text:
                 'Results will appear here. Primers are ranked by an overall quality score combining Tm balance, GC content and dimer/hairpin risk.',
           ),
-        ..._results.asMap().entries.map(
-          (e) => _PrimerPairCard(index: e.key, result: e.value),
-        ),
+        ..._results.asMap().entries.map((e) => _PrimerPairCard(index: e.key, result: e.value)),
       ],
     );
   }
@@ -245,14 +227,9 @@ class _PrimerPairCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: AppColors.gradPrimer,
-                    ),
+                    gradient: const LinearGradient(colors: AppColors.gradPrimer),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -267,10 +244,7 @@ class _PrimerPairCard extends StatelessWidget {
                 const Spacer(),
                 Text(
                   'Score: ${result.pairScore.toStringAsFixed(0)}/100',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.success,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.success),
                 ),
               ],
             ),
@@ -283,10 +257,7 @@ class _PrimerPairCard extends StatelessWidget {
               spacing: 16,
               runSpacing: 6,
               children: [
-                _Metric(
-                  label: 'Product size',
-                  value: '${result.productSize} bp',
-                ),
+                _Metric(label: 'Product size', value: '${result.productSize} bp'),
                 _Metric(
                   label: 'Tm difference',
                   value: '${result.tmDifference.toStringAsFixed(1)} °C',
@@ -340,18 +311,9 @@ class _PrimerRow extends StatelessWidget {
           Wrap(
             spacing: 12,
             children: [
-              _Metric(
-                label: 'Tm',
-                value: '${primer.meltingTemp.toStringAsFixed(1)}°C',
-              ),
-              _Metric(
-                label: 'GC%',
-                value: '${primer.gcContent.toStringAsFixed(1)}%',
-              ),
-              _Metric(
-                label: 'Hairpin',
-                value: '${(primer.hairpinRisk * 100).toStringAsFixed(0)}%',
-              ),
+              _Metric(label: 'Tm', value: '${primer.meltingTemp.toStringAsFixed(1)}°C'),
+              _Metric(label: 'GC%', value: '${primer.gcContent.toStringAsFixed(1)}%'),
+              _Metric(label: 'Hairpin', value: '${(primer.hairpinRisk * 100).toStringAsFixed(0)}%'),
               _Metric(
                 label: 'Self-dimer',
                 value: '${(primer.selfDimerRisk * 100).toStringAsFixed(0)}%',
@@ -462,8 +424,7 @@ class _LampPrimerTabState extends State<_LampPrimerTab> {
     }
     return ReportData(
       title: 'LAMP Primer Design Report',
-      subtitle:
-          'Template: ${_templateName ?? ""} · ${_results.length} candidate primer sets',
+      subtitle: 'Template: ${_templateName ?? ""} · ${_results.length} candidate primer sets',
       sections: [
         ReportSection(title: 'Overview', bodyText: LampPrimerEngine.disclaimer),
         ReportSection(title: 'Candidate LAMP Primer Sets', table: rows),
@@ -506,10 +467,7 @@ class _LampPrimerTabState extends State<_LampPrimerTab> {
           min: 15,
           max: 26,
           divisions: 11,
-          labels: RangeLabels(
-            '${_outerLenRange.start.round()}',
-            '${_outerLenRange.end.round()}',
-          ),
+          labels: RangeLabels('${_outerLenRange.start.round()}', '${_outerLenRange.end.round()}'),
           onChanged: (v) => setState(() => _outerLenRange = v),
         ),
         const SizedBox(height: 8),
@@ -522,10 +480,7 @@ class _LampPrimerTabState extends State<_LampPrimerTab> {
           min: 15,
           max: 26,
           divisions: 11,
-          labels: RangeLabels(
-            '${_innerLenRange.start.round()}',
-            '${_innerLenRange.end.round()}',
-          ),
+          labels: RangeLabels('${_innerLenRange.start.round()}', '${_innerLenRange.end.round()}'),
           onChanged: (v) => setState(() => _innerLenRange = v),
         ),
         const SizedBox(height: 8),
@@ -538,10 +493,7 @@ class _LampPrimerTabState extends State<_LampPrimerTab> {
           min: 20,
           max: 150,
           divisions: 13,
-          labels: RangeLabels(
-            '${_coreRange.start.round()}',
-            '${_coreRange.end.round()}',
-          ),
+          labels: RangeLabels('${_coreRange.start.round()}', '${_coreRange.end.round()}'),
           onChanged: (v) => setState(() => _coreRange = v),
         ),
         const SizedBox(height: 4),
@@ -567,29 +519,21 @@ class _LampPrimerTabState extends State<_LampPrimerTab> {
                 ? const SizedBox(
                     width: 16,
                     height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                   )
                 : const Icon(Icons.all_inclusive_rounded),
-            label: Text(
-              _running ? 'Designing LAMP primers...' : 'Design LAMP Primers',
-            ),
+            label: Text(_running ? 'Designing LAMP primers...' : 'Design LAMP Primers'),
           ),
         ),
         const SizedBox(height: 20),
-        if (_tooShortWarning != null)
-          _InfoBanner(text: _tooShortWarning!, isWarning: true),
+        if (_tooShortWarning != null) _InfoBanner(text: _tooShortWarning!, isWarning: true),
         if (_results.isEmpty && !_running && _tooShortWarning == null)
           const _InfoBanner(
             text:
                 'Results will appear here. Sets are ranked by Tm balance across '
                 'all 6 core segments, hairpin risk and FIP/BIP cross-dimer risk.',
           ),
-        ..._results.asMap().entries.map(
-          (e) => _LampSetCard(index: e.key, set: e.value),
-        ),
+        ..._results.asMap().entries.map((e) => _LampSetCard(index: e.key, set: e.value)),
       ],
     );
   }
@@ -612,14 +556,9 @@ class _LampSetCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: AppColors.gradPrimer,
-                    ),
+                    gradient: const LinearGradient(colors: AppColors.gradPrimer),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -634,10 +573,7 @@ class _LampSetCard extends StatelessWidget {
                 const Spacer(),
                 Text(
                   'Score: ${set.score.toStringAsFixed(0)}/100',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.success,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.success),
                 ),
               ],
             ),
@@ -672,15 +608,9 @@ class _LampSetCard extends StatelessWidget {
               spacing: 16,
               runSpacing: 6,
               children: [
-                _Metric(
-                  label: 'Amplicon core',
-                  value: '${set.ampliconCoreSize} bp',
-                ),
+                _Metric(label: 'Amplicon core', value: '${set.ampliconCoreSize} bp'),
                 _Metric(label: 'Total span', value: '${set.totalSpan} bp'),
-                _Metric(
-                  label: 'Loop primers',
-                  value: set.hasLoopPrimers ? 'Yes' : 'Not found',
-                ),
+                _Metric(label: 'Loop primers', value: set.hasLoopPrimers ? 'Yes' : 'Not found'),
               ],
             ),
             if (set.notes.isNotEmpty) ...[
@@ -725,11 +655,7 @@ class _AmpliconMapChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w700,
-          color: color,
-        ),
+        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: color),
       ),
     );
 
@@ -789,14 +715,8 @@ class _LampPrimerRow extends StatelessWidget {
             spacing: 12,
             children: [
               _Metric(label: 'Length', value: '${piece.length} nt'),
-              _Metric(
-                label: 'Tm',
-                value: '${piece.meltingTemp.toStringAsFixed(1)}°C',
-              ),
-              _Metric(
-                label: 'GC%',
-                value: '${piece.gcContent.toStringAsFixed(1)}%',
-              ),
+              _Metric(label: 'Tm', value: '${piece.meltingTemp.toStringAsFixed(1)}°C'),
+              _Metric(label: 'GC%', value: '${piece.gcContent.toStringAsFixed(1)}%'),
             ],
           ),
         ],
@@ -831,9 +751,7 @@ class _LampComposite extends StatelessWidget {
           ],
         ),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: AppColors.gradPrimer.first.withValues(alpha: 0.25),
-        ),
+        border: Border.all(color: AppColors.gradPrimer.first.withValues(alpha: 0.25)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -859,14 +777,8 @@ class _LampComposite extends StatelessWidget {
             spacing: 12,
             children: [
               _Metric(label: 'Length', value: '${sequence.length} nt'),
-              _Metric(
-                label: 'Segment 1 Tm',
-                value: '${tm1.toStringAsFixed(1)}°C',
-              ),
-              _Metric(
-                label: 'Segment 2 Tm',
-                value: '${tm2.toStringAsFixed(1)}°C',
-              ),
+              _Metric(label: 'Segment 1 Tm', value: '${tm1.toStringAsFixed(1)}°C'),
+              _Metric(label: 'Segment 2 Tm', value: '${tm2.toStringAsFixed(1)}°C'),
             ],
           ),
         ],
@@ -896,10 +808,7 @@ class _Metric extends StatelessWidget {
           ),
           TextSpan(
             text: value,
-            style: const TextStyle(
-              fontWeight: FontWeight.w700,
-              color: AppColors.textDark,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.textDark),
           ),
         ],
       ),

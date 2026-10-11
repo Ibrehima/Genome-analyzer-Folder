@@ -36,13 +36,10 @@ class SequencingPipelineEngine {
       final sample = textPreview.split(RegExp(r'\r?\n')).take(8).join('\n');
       // Illumina Casava 1.8+ header:
       // @<instrument>:<run>:<flowcell>:<lane>:<tile>:<x>:<y> <read>:<filtered>:<control>:<index>
-      final illuminaHeader = RegExp(
-        r'^@\S+:\d+:\S+:\d+:\d+:\d+:\d+\s+\d:[YN]:\d+:',
-      );
+      final illuminaHeader = RegExp(r'^@\S+:\d+:\S+:\d+:\d+:\d+:\d+\s+\d:[YN]:\d+:');
       if (illuminaHeader.hasMatch(sample)) return SequencingPlatform.illumina;
       // ONT (MinKNOW/Guppy/Dorado) header contains runid=, ch=, start_time=
-      if (sample.contains('runid=') &&
-          (sample.contains(' ch=') || sample.contains('read='))) {
+      if (sample.contains('runid=') && (sample.contains(' ch=') || sample.contains('read='))) {
         return SequencingPlatform.nanopore;
       }
       // PacBio subread/CCS naming: <movie>/<zmw>/<start>_<end> or .../ccs
@@ -161,15 +158,11 @@ class SequencingPipelineEngine {
         '$unassigned unassigned (discarded).',
       );
       if (unassigned > 0) {
-        warnings.add(
-          '$unassigned reads did not match any provided barcode and were discarded.',
-        );
+        warnings.add('$unassigned reads did not match any provided barcode and were discarded.');
       }
     } else {
       demuxed = reads;
-      log.add(
-        'No barcode sheet provided — skipping demultiplexing (treating as single sample).',
-      );
+      log.add('No barcode sheet provided — skipping demultiplexing (treating as single sample).');
     }
 
     int adapterTrimmed = 0;
@@ -179,16 +172,11 @@ class SequencingPipelineEngine {
       if (idx >= 0) {
         adapterTrimmed++;
         final newQual = r.qualityScores?.sublist(0, idx);
-        return r.copyWith(
-          sequence: r.sequence.substring(0, idx),
-          qualityScores: newQual,
-        );
+        return r.copyWith(sequence: r.sequence.substring(0, idx), qualityScores: newQual);
       }
       return r;
     }).toList();
-    log.add(
-      'Adapter trimming (search for "$probe..."): $adapterTrimmed read(s) trimmed.',
-    );
+    log.add('Adapter trimming (search for "$probe..."): $adapterTrimmed read(s) trimmed.');
 
     int qualityTrimmedBases = 0;
     final afterQuality = <BioSequence>[];
@@ -226,9 +214,7 @@ class SequencingPipelineEngine {
         '(final length below $minFinalLength bp after trimming).',
       );
     }
-    log.add(
-      'Pipeline complete: ${finalReads.length} clean read(s) ready for FASTA/FASTQ export.',
-    );
+    log.add('Pipeline complete: ${finalReads.length} clean read(s) ready for FASTA/FASTQ export.');
 
     return SequencingPipelineResult(
       platform: SequencingPlatform.illumina,
@@ -249,9 +235,7 @@ class SequencingPipelineEngine {
     final log = <String>[];
     final warnings = <String>[];
     final reads = SequenceEngine.parseFastq(fastqContent);
-    log.add(
-      'Detected Oxford Nanopore-style FASTQ. Parsed ${reads.length} raw reads.',
-    );
+    log.add('Detected Oxford Nanopore-style FASTQ. Parsed ${reads.length} raw reads.');
 
     int lengthFiltered = 0, qualityFiltered = 0;
     final passed = <BioSequence>[];
@@ -270,12 +254,8 @@ class SequencingPipelineEngine {
       }
       passed.add(r);
     }
-    log.add(
-      'Length filter (< $minLength bp): removed $lengthFiltered read(s).',
-    );
-    log.add(
-      'Quality filter (mean Q < $minMeanQuality): removed $qualityFiltered read(s).',
-    );
+    log.add('Length filter (< $minLength bp): removed $lengthFiltered read(s).');
+    log.add('Quality filter (mean Q < $minMeanQuality): removed $qualityFiltered read(s).');
 
     final probe = adapter.length > 14 ? adapter.substring(0, 14) : adapter;
     int trimmedEnds = 0;
@@ -288,11 +268,7 @@ class SequencingPipelineEngine {
         seq = seq.substring(0, idx);
         qual = qual?.sublist(0, idx);
       }
-      return r.copyWith(
-        sequence: seq,
-        qualityScores: qual,
-        source: 'sequencing:nanopore',
-      );
+      return r.copyWith(sequence: seq, qualityScores: qual, source: 'sequencing:nanopore');
     }).toList();
     log.add('Adapter trimming: $trimmedEnds read(s) trimmed at adapter site.');
 
@@ -301,9 +277,7 @@ class SequencingPipelineEngine {
         'No reads passed the Nanopore QC filters — check the raw file or relax thresholds.',
       );
     }
-    log.add(
-      'Pipeline complete: ${trimmed.length} filtered read(s) ready for FASTA/FASTQ export.',
-    );
+    log.add('Pipeline complete: ${trimmed.length} filtered read(s) ready for FASTA/FASTQ export.');
 
     return SequencingPipelineResult(
       platform: SequencingPlatform.nanopore,
@@ -319,9 +293,7 @@ class SequencingPipelineEngine {
     final log = <String>[];
     final warnings = <String>[];
     final reads = SequenceEngine.parseAuto(content, source: 'pacbio_raw');
-    log.add(
-      'Detected PacBio-style read naming. Parsed ${reads.length} raw subreads.',
-    );
+    log.add('Detected PacBio-style read naming. Parsed ${reads.length} raw subreads.');
 
     final Map<String, List<BioSequence>> groups = {};
     for (final r in reads) {
@@ -329,9 +301,7 @@ class SequencingPipelineEngine {
       final key = parts.length >= 2 ? '${parts[0]}/${parts[1]}' : r.name;
       groups.putIfAbsent(key, () => []).add(r);
     }
-    log.add(
-      'Grouped subreads into ${groups.length} ZMW molecule(s) by movie/ZMW ID.',
-    );
+    log.add('Grouped subreads into ${groups.length} ZMW molecule(s) by movie/ZMW ID.');
 
     final ccsReads = <BioSequence>[];
     int singlePass = 0;
@@ -442,10 +412,7 @@ class SequencingPipelineEngine {
       log.add('No quality trimming applied (missing PCON tag).');
     }
 
-    final baseName = fileName.replaceAll(
-      RegExp(r'\.(ab1|scf)$', caseSensitive: false),
-      '',
-    );
+    final baseName = fileName.replaceAll(RegExp(r'\.(ab1|scf)$', caseSensitive: false), '');
     final out = BioSequence(
       name: baseName.isEmpty ? 'sanger_read' : baseName,
       type: SequenceEngine.detectType(finalSeq),
@@ -453,9 +420,7 @@ class SequencingPipelineEngine {
       qualityScores: finalQual,
       source: 'sequencing:sanger',
     );
-    log.add(
-      'Pipeline complete: 1 high-quality consensus read ready (${finalSeq.length} bp).',
-    );
+    log.add('Pipeline complete: 1 high-quality consensus read ready (${finalSeq.length} bp).');
 
     return SequencingPipelineResult(
       platform: SequencingPlatform.sanger,

@@ -11,9 +11,7 @@ class TxtExportEngine {
     buf.writeln('=' * 70);
     buf.writeln(data.title.toUpperCase());
     if (data.subtitle.isNotEmpty) buf.writeln(data.subtitle);
-    buf.writeln(
-      'Generated: ${DateFormat('yyyy-MM-dd HH:mm').format(data.generatedAt)}',
-    );
+    buf.writeln('Generated: ${DateFormat('yyyy-MM-dd HH:mm').format(data.generatedAt)}');
     buf.writeln('=' * 70);
     buf.writeln();
 

@@ -7,23 +7,13 @@ import 'sequence_engine.dart';
 class StatisticsEngine {
   static DescriptiveStats _describe(List<double> values) {
     if (values.isEmpty) {
-      return DescriptiveStats(
-        mean: 0,
-        median: 0,
-        stdDev: 0,
-        min: 0,
-        max: 0,
-        n: 0,
-      );
+      return DescriptiveStats(mean: 0, median: 0, stdDev: 0, min: 0, max: 0, n: 0);
     }
     final n = values.length;
     final mean = values.reduce((a, b) => a + b) / n;
     final sorted = List<double>.from(values)..sort();
-    final median = n.isOdd
-        ? sorted[n ~/ 2]
-        : (sorted[n ~/ 2 - 1] + sorted[n ~/ 2]) / 2;
-    final variance =
-        values.map((v) => pow(v - mean, 2)).reduce((a, b) => a + b) / n;
+    final median = n.isOdd ? sorted[n ~/ 2] : (sorted[n ~/ 2 - 1] + sorted[n ~/ 2]) / 2;
+    final variance = values.map((v) => pow(v - mean, 2)).reduce((a, b) => a + b) / n;
     final stdDev = sqrt(variance);
     return DescriptiveStats(
       mean: mean,
@@ -63,9 +53,7 @@ class StatisticsEngine {
 
   static StatisticsReport analyzeCollection(List<BioSequence> sequences) {
     final lengths = sequences.map((s) => s.length.toDouble()).toList();
-    final gcValues = sequences
-        .map((s) => SequenceEngine.gcContent(s.sequence))
-        .toList();
+    final gcValues = sequences.map((s) => SequenceEngine.gcContent(s.sequence)).toList();
 
     final Map<String, int> combinedFreq = {};
     for (final s in sequences) {
@@ -104,24 +92,12 @@ class StatisticsEngine {
     }
     if (query.length > reference.length) {
       for (int i = reference.length; i < query.length; i++) {
-        variants.add(
-          VariantCall(
-            position: i,
-            refBase: '-',
-            altBase: query[i],
-            type: 'Insertion',
-          ),
-        );
+        variants.add(VariantCall(position: i, refBase: '-', altBase: query[i], type: 'Insertion'));
       }
     } else if (reference.length > query.length) {
       for (int i = query.length; i < reference.length; i++) {
         variants.add(
-          VariantCall(
-            position: i,
-            refBase: reference[i],
-            altBase: '-',
-            type: 'Deletion',
-          ),
+          VariantCall(position: i, refBase: reference[i], altBase: '-', type: 'Deletion'),
         );
       }
     }

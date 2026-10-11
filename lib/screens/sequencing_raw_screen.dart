@@ -30,9 +30,7 @@ class _SequencingRawScreenState extends State<SequencingRawScreen> {
   SequencingPlatform? _override;
   bool _busy = false;
   SequencingPipelineResult? _result;
-  final _barcodeCtrl = TextEditingController(
-    text: 'SampleA,ACGTAC\nSampleB,TGCATG',
-  );
+  final _barcodeCtrl = TextEditingController(text: 'SampleA,ACGTAC\nSampleB,TGCATG');
   bool _useBarcodes = false;
 
   Future<void> _pickFile() async {
@@ -43,8 +41,7 @@ class _SequencingRawScreenState extends State<SequencingRawScreen> {
     if (bytes == null) return;
     String? text;
     final looksBinary =
-        file.name.toLowerCase().endsWith('.ab1') ||
-        file.name.toLowerCase().endsWith('.scf');
+        file.name.toLowerCase().endsWith('.ab1') || file.name.toLowerCase().endsWith('.scf');
     if (!looksBinary) {
       try {
         text = utf8.decode(bytes, allowMalformed: true);
@@ -68,19 +65,12 @@ class _SequencingRawScreenState extends State<SequencingRawScreen> {
   }
 
   List<DemuxSample> _parseBarcodes() {
-    final lines = _barcodeCtrl.text
-        .split(RegExp(r'\r?\n'))
-        .where((l) => l.trim().isNotEmpty);
+    final lines = _barcodeCtrl.text.split(RegExp(r'\r?\n')).where((l) => l.trim().isNotEmpty);
     final list = <DemuxSample>[];
     for (final line in lines) {
       final parts = line.split(',');
       if (parts.length >= 2) {
-        list.add(
-          DemuxSample(
-            name: parts[0].trim(),
-            barcode: parts[1].trim().toUpperCase(),
-          ),
-        );
+        list.add(DemuxSample(name: parts[0].trim(), barcode: parts[1].trim().toUpperCase()));
       }
     }
     return list;
@@ -107,10 +97,7 @@ class _SequencingRawScreenState extends State<SequencingRawScreen> {
           result = SequencingPipelineEngine.processPacBio(_textContent ?? '');
           break;
         case SequencingPlatform.sanger:
-          result = SequencingPipelineEngine.processSanger(
-            _fileBytes!,
-            fileName: _fileName!,
-          );
+          result = SequencingPipelineEngine.processSanger(_fileBytes!, fileName: _fileName!);
           break;
         case SequencingPlatform.unknown:
           result = SequencingPipelineResult(
@@ -163,15 +150,12 @@ class _SequencingRawScreenState extends State<SequencingRawScreen> {
           ],
         ),
         ReportSection(title: 'Pipeline Steps', bullets: r.stepsLog),
-        if (r.warnings.isNotEmpty)
-          ReportSection(title: 'Warnings', bullets: r.warnings),
+        if (r.warnings.isNotEmpty) ReportSection(title: 'Warnings', bullets: r.warnings),
         ReportSection(
           title: 'Output Sequences',
           table: [
             ['Name', 'Length (bp)', 'Type', 'Source'],
-            ...r.outputSequences.map(
-              (s) => [s.name, '${s.length}', s.type.label, s.source],
-            ),
+            ...r.outputSequences.map((s) => [s.name, '${s.length}', s.type.label, s.source]),
           ],
         ),
       ],
@@ -200,10 +184,7 @@ class _SequencingRawScreenState extends State<SequencingRawScreen> {
         title: const Text('Raw Sequencing Data'),
         actions: [
           if (_result != null && _result!.outputSequences.isNotEmpty)
-            ExportMenuButton(
-              reportBuilder: _buildReport,
-              moduleType: 'Sequencing Pipeline',
-            ),
+            ExportMenuButton(reportBuilder: _buildReport, moduleType: 'Sequencing Pipeline'),
           const SizedBox(width: 8),
         ],
       ),
@@ -241,9 +222,7 @@ class _SequencingRawScreenState extends State<SequencingRawScreen> {
           OutlinedButton.icon(
             onPressed: _pickFile,
             icon: const Icon(Icons.upload_file),
-            label: Text(
-              _fileName == null ? 'Select raw sequencing file' : _fileName!,
-            ),
+            label: Text(_fileName == null ? 'Select raw sequencing file' : _fileName!),
           ),
           if (_detected != null) ...[
             const SizedBox(height: 14),
@@ -264,19 +243,13 @@ class _SequencingRawScreenState extends State<SequencingRawScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Text(
-                  'Override platform: ',
-                  style: TextStyle(fontSize: 12.5),
-                ),
+                const Text('Override platform: ', style: TextStyle(fontSize: 12.5)),
                 const SizedBox(width: 6),
                 DropdownButton<SequencingPlatform?>(
                   value: _override,
                   hint: const Text('Auto'),
                   items: [
-                    const DropdownMenuItem(
-                      value: null,
-                      child: Text('Auto (use detected)'),
-                    ),
+                    const DropdownMenuItem(value: null, child: Text('Auto (use detected)')),
                     ...SequencingPlatform.values.map(
                       (p) => DropdownMenuItem(value: p, child: Text(p.label)),
                     ),
@@ -306,9 +279,7 @@ class _SequencingRawScreenState extends State<SequencingRawScreen> {
                 controller: _barcodeCtrl,
                 maxLines: 4,
                 style: const TextStyle(fontFamily: 'monospace', fontSize: 12.5),
-                decoration: const InputDecoration(
-                  labelText: 'Sample sheet (name,barcode)',
-                ),
+                decoration: const InputDecoration(labelText: 'Sample sheet (name,barcode)'),
               ),
           ],
           const SizedBox(height: 18),
@@ -320,10 +291,7 @@ class _SequencingRawScreenState extends State<SequencingRawScreen> {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.play_circle_outline),
               label: Text(_busy ? 'Processing...' : 'Run Pipeline'),
@@ -331,10 +299,7 @@ class _SequencingRawScreenState extends State<SequencingRawScreen> {
           ),
           const SizedBox(height: 20),
           if (_result != null)
-            _PipelineResultView(
-              result: _result!,
-              onAddToLibrary: _addAllToLibrary,
-            ),
+            _PipelineResultView(result: _result!, onAddToLibrary: _addAllToLibrary),
         ],
       ),
     );
@@ -344,10 +309,7 @@ class _SequencingRawScreenState extends State<SequencingRawScreen> {
 class _PipelineResultView extends StatelessWidget {
   final SequencingPipelineResult result;
   final VoidCallback onAddToLibrary;
-  const _PipelineResultView({
-    required this.result,
-    required this.onAddToLibrary,
-  });
+  const _PipelineResultView({required this.result, required this.onAddToLibrary});
 
   @override
   Widget build(BuildContext context) {
@@ -365,17 +327,12 @@ class _PipelineResultView extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'Pipeline Log — ${result.platform.label}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                        ),
+                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
                       ),
                     ),
                     Chip(
                       label: Text('${result.outputSequences.length} reads out'),
-                      backgroundColor: AppColors.success.withValues(
-                        alpha: 0.12,
-                      ),
+                      backgroundColor: AppColors.success.withValues(alpha: 0.12),
                     ),
                   ],
                 ),
@@ -386,18 +343,9 @@ class _PipelineResultView extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
-                          Icons.check_circle,
-                          size: 15,
-                          color: AppColors.success,
-                        ),
+                        const Icon(Icons.check_circle, size: 15, color: AppColors.success),
                         const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            s,
-                            style: const TextStyle(fontSize: 12.5),
-                          ),
-                        ),
+                        Expanded(child: Text(s, style: const TextStyle(fontSize: 12.5))),
                       ],
                     ),
                   ),
@@ -416,12 +364,7 @@ class _PipelineResultView extends StatelessWidget {
                             color: AppColors.warning,
                           ),
                           const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              w,
-                              style: const TextStyle(fontSize: 12.5),
-                            ),
-                          ),
+                          Expanded(child: Text(w, style: const TextStyle(fontSize: 12.5))),
                         ],
                       ),
                     ),
@@ -454,16 +397,10 @@ class _PipelineResultView extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 8),
                   child: ListTile(
                     dense: true,
-                    leading: const Icon(
-                      Icons.dns_rounded,
-                      color: AppColors.primaryBlue,
-                    ),
+                    leading: const Icon(Icons.dns_rounded, color: AppColors.primaryBlue),
                     title: Text(
                       s.name,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                     subtitle: Text(
                       '${s.type.label} · ${s.length} bp${s.hasQuality ? " · has quality" : ""}',
@@ -477,10 +414,7 @@ class _PipelineResultView extends StatelessWidget {
               padding: const EdgeInsets.only(top: 6),
               child: Text(
                 '... and ${result.outputSequences.length - 50} more reads (showing first 50).',
-                style: const TextStyle(
-                  fontSize: 11.5,
-                  color: AppColors.textMuted,
-                ),
+                style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted),
               ),
             ),
         ],

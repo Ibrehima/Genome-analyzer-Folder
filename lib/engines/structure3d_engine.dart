@@ -48,21 +48,12 @@ class Structure3DEngine {
       bonds.add([strand1Idx, strand2Idx]); // base-pair rung
     }
 
-    return Structure3DResult(
-      atoms: atoms,
-      bonds: bonds,
-      modelKind: 'dna_helix',
-    );
+    return Structure3DResult(atoms: atoms, bonds: bonds, modelKind: 'dna_helix');
   }
 
-  static Structure3DResult proteinBackbone(
-    String protein, {
-    int maxResidues = 150,
-  }) {
+  static Structure3DResult proteinBackbone(String protein, {int maxResidues = 150}) {
     final full = ProteomicsEngine.cleanProtein(protein);
-    final seq = full.length > maxResidues
-        ? full.substring(0, maxResidues)
-        : full;
+    final seq = full.length > maxResidues ? full.substring(0, maxResidues) : full;
     final ss = ProteomicsEngine.perResidueSecondaryStructure(seq);
 
     final atoms = <Atom3D>[];
@@ -96,17 +87,11 @@ class Structure3DEngine {
           y = cos(i * 0.7) * 2.0;
           z += 2.2;
       }
-      atoms.add(
-        Atom3D(x: x, y: y, z: z, label: seq[i], kind: cls.toLowerCase()),
-      );
+      atoms.add(Atom3D(x: x, y: y, z: z, label: seq[i], kind: cls.toLowerCase()));
       if (i > 0) bonds.add([i - 1, i]);
     }
 
-    return Structure3DResult(
-      atoms: atoms,
-      bonds: bonds,
-      modelKind: 'protein_backbone',
-    );
+    return Structure3DResult(atoms: atoms, bonds: bonds, modelKind: 'protein_backbone');
   }
 
   static int _longestHomopolymer(String seq) {
@@ -197,9 +182,7 @@ class Structure3DEngine {
         );
         assessment = 'Higher predicted thermostability';
       } else if (aliphatic > 50) {
-        observations.add(
-          'Moderate aliphatic index (${aliphatic.toStringAsFixed(1)}).',
-        );
+        observations.add('Moderate aliphatic index (${aliphatic.toStringAsFixed(1)}).');
         assessment = 'Moderate predicted thermostability';
       } else {
         observations.add(

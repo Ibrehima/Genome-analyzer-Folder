@@ -63,9 +63,7 @@ class RnaEngine {
     final polyA = _polyATailLength(seq);
     final hasPolyA = polyA >= 10;
     if (hasPolyA) {
-      reasons.add(
-        'Poly-A tail detected ($polyA consecutive A at the 3\' end).',
-      );
+      reasons.add('Poly-A tail detected ($polyA consecutive A at the 3\' end).');
     }
 
     final dnaLike = seq.replaceAll('U', 'T');
@@ -84,9 +82,7 @@ class RnaEngine {
     if (len >= 18 && len <= 26) {
       guess = RnaTypeGuess.miRNA;
       confidence = 55;
-      reasons.add(
-        'Length ($len nt) matches the typical mature microRNA size range (18-26 nt).',
-      );
+      reasons.add('Length ($len nt) matches the typical mature microRNA size range (18-26 nt).');
     } else if (len >= 60 && len <= 100) {
       guess = RnaTypeGuess.tRNA;
       confidence = 40;
@@ -157,22 +153,12 @@ class RnaEngine {
     final seq = full.length > maxLength ? full.substring(0, maxLength) : full;
     final n = seq.length;
     if (n < minLoop + 2) {
-      return RnaFoldResult(
-        sequence: seq,
-        dotBracket: '.' * n,
-        pairCount: 0,
-        pseudoFreeEnergy: 0,
-      );
+      return RnaFoldResult(sequence: seq, dotBracket: '.' * n, pairCount: 0, pseudoFreeEnergy: 0);
     }
 
     bool canPair(String a, String b) {
       final p = a + b;
-      return p == 'AU' ||
-          p == 'UA' ||
-          p == 'GC' ||
-          p == 'CG' ||
-          p == 'GU' ||
-          p == 'UG';
+      return p == 'AU' || p == 'UA' || p == 'GC' || p == 'CG' || p == 'GU' || p == 'UG';
     }
 
     final dp = List.generate(n, (_) => List<int>.filled(n, 0));

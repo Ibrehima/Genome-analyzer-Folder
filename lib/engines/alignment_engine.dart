@@ -199,9 +199,7 @@ class AlignmentEngine {
       final diag = s[0] - s[1];
       diagCounts[diag] = (diagCounts[diag] ?? 0) + 1;
     }
-    final bestDiag = diagCounts.entries
-        .reduce((x, y) => x.value >= y.value ? x : y)
-        .key;
+    final bestDiag = diagCounts.entries.reduce((x, y) => x.value >= y.value ? x : y).key;
     final onDiag = seeds.where((s) => s[0] - s[1] == bestDiag).toList()
       ..sort((x, y) => x[0].compareTo(y[0]));
     final anchor = onDiag[onDiag.length ~/ 2];
@@ -331,9 +329,7 @@ class AlignmentEngine {
     int i = n, j = m;
     while (i > 0 || j > 0) {
       final cur = at(i, j);
-      if (i > 0 &&
-          j > 0 &&
-          cur == at(i - 1, j - 1) + score(a[i - 1], b[j - 1])) {
+      if (i > 0 && j > 0 && cur == at(i - 1, j - 1) + score(a[i - 1], b[j - 1])) {
         sbA.write(a[i - 1]);
         sbB.write(b[j - 1]);
         i--;
@@ -373,12 +369,9 @@ class AlignmentEngine {
 
     // M = best ending in a match/mismatch, X = best ending in gap in A
     // (i.e. consuming b, "insertion"), Y = best ending in gap in B.
-    final M = Int32List((n + 1) * width)
-      ..fillRange(0, (n + 1) * width, _negInf);
-    final X = Int32List((n + 1) * width)
-      ..fillRange(0, (n + 1) * width, _negInf);
-    final Y = Int32List((n + 1) * width)
-      ..fillRange(0, (n + 1) * width, _negInf);
+    final M = Int32List((n + 1) * width)..fillRange(0, (n + 1) * width, _negInf);
+    final X = Int32List((n + 1) * width)..fillRange(0, (n + 1) * width, _negInf);
+    final Y = Int32List((n + 1) * width)..fillRange(0, (n + 1) * width, _negInf);
 
     int idx(int i, int j) => i * width + j;
 
@@ -414,9 +407,7 @@ class AlignmentEngine {
     final sbB = StringBuffer();
     int i = n, j = m;
     // Track which matrix we're currently in during traceback.
-    int state = M[end] >= X[end] && M[end] >= Y[end]
-        ? 0
-        : (X[end] >= Y[end] ? 1 : 2);
+    int state = M[end] >= X[end] && M[end] >= Y[end] ? 0 : (X[end] >= Y[end] ? 1 : 2);
 
     while (i > 0 || j > 0) {
       if (state == 0 && i > 0 && j > 0) {
@@ -539,10 +530,8 @@ class AlignmentEngine {
     final ext = opt.gapExtendPenalty;
     final width = m + 1;
     final M = Int32List((n + 1) * width);
-    final X = Int32List((n + 1) * width)
-      ..fillRange(0, (n + 1) * width, _negInf);
-    final Y = Int32List((n + 1) * width)
-      ..fillRange(0, (n + 1) * width, _negInf);
+    final X = Int32List((n + 1) * width)..fillRange(0, (n + 1) * width, _negInf);
+    final Y = Int32List((n + 1) * width)..fillRange(0, (n + 1) * width, _negInf);
     int idx(int i, int j) => i * width + j;
 
     int maxScore = 0, maxI = 0, maxJ = 0;
@@ -572,9 +561,7 @@ class AlignmentEngine {
     final sbA = StringBuffer();
     final sbB = StringBuffer();
     int i = maxI, j = maxJ;
-    int state =
-        M[idx(maxI, maxJ)] >= X[idx(maxI, maxJ)] &&
-            M[idx(maxI, maxJ)] >= Y[idx(maxI, maxJ)]
+    int state = M[idx(maxI, maxJ)] >= X[idx(maxI, maxJ)] && M[idx(maxI, maxJ)] >= Y[idx(maxI, maxJ)]
         ? 0
         : (X[idx(maxI, maxJ)] >= Y[idx(maxI, maxJ)] ? 1 : 2);
 
@@ -638,9 +625,7 @@ class AlignmentEngine {
   ) {
     final n = a.length;
     final m = b.length;
-    final gp = opt.gapModel == GapModel.affine
-        ? opt.gapExtendPenalty
-        : opt.gapPenalty;
+    final gp = opt.gapModel == GapModel.affine ? opt.gapExtendPenalty : opt.gapPenalty;
     final width = m + 1;
     final dp = Int32List((n + 1) * width);
     int idx(int i, int j) => i * width + j;
@@ -705,10 +690,7 @@ class AlignmentEngine {
     final leadingA = a.substring(0, coreStart);
     final trailingA = a.substring(bestI);
     final alignedA = leadingA + coreA + trailingA;
-    final alignedB =
-        _gapsOfLength(leadingA.length) +
-        coreB +
-        _gapsOfLength(trailingA.length);
+    final alignedB = _gapsOfLength(leadingA.length) + coreB + _gapsOfLength(trailingA.length);
 
     // Identity/similarity should only be computed over the matched core
     // (excludes the free, unpenalized overhanging flanks of `a`).
@@ -716,15 +698,13 @@ class AlignmentEngine {
     return (alignedA, alignedB, bestScore, statsRange);
   }
 
-  static String _gapsOfLength(int n) =>
-      n <= 0 ? '' : List.filled(n, '-').join();
+  static String _gapsOfLength(int n) => n <= 0 ? '' : List.filled(n, '-').join();
 
   // ---------------------------------------------------------------------
   // Result assembly
   // ---------------------------------------------------------------------
 
-  static String _reverse(String s) =>
-      String.fromCharCodes(s.codeUnits.reversed);
+  static String _reverse(String s) => String.fromCharCodes(s.codeUnits.reversed);
 
   static PairwiseAlignmentResult _finishResult(
     String alignedA,
@@ -854,11 +834,7 @@ class AlignmentEngine {
         final r = _profileProgressiveAlign(sequences, options);
         aligned = r.$1;
         guideOrder = r.$2;
-        final refined = _iterativeRefine(
-          aligned,
-          options,
-          maxPasses: options.refinementIterations,
-        );
+        final refined = _iterativeRefine(aligned, options, maxPasses: options.refinementIterations);
         aligned = refined.$1;
         refinementPasses = refined.$2;
         notes = [
@@ -903,10 +879,7 @@ class AlignmentEngine {
   /// Original fast heuristic: align every sequence against the single
   /// longest sequence, re-padding previously aligned sequences as the
   /// reference grows.
-  static List<String> _centerStarAlign(
-    List<String> sequences,
-    AlignmentOptions options,
-  ) {
+  static List<String> _centerStarAlign(List<String> sequences, AlignmentOptions options) {
     int centerIdx = 0;
     for (int i = 1; i < sequences.length; i++) {
       if (sequences[i].length > sequences[centerIdx].length) centerIdx = i;
@@ -917,11 +890,7 @@ class AlignmentEngine {
 
     for (int i = 0; i < sequences.length; i++) {
       if (i == centerIdx) continue;
-      final res = globalAlign(
-        aligned[centerIdx],
-        sequences[i],
-        options: options,
-      );
+      final res = globalAlign(aligned[centerIdx], sequences[i], options: options);
       aligned[centerIdx] = res.alignedSeqA;
       aligned[i] = res.alignedSeqB;
       for (int k = 0; k < sequences.length; k++) {
@@ -996,8 +965,7 @@ class AlignmentEngine {
       final Map<int, double> newDist = {};
       for (final idx in active) {
         if (idx == bi || idx == bj) continue;
-        newDist[idx] =
-            (d[bi][idx] * sizeI + d[bj][idx] * sizeJ) / (sizeI + sizeJ);
+        newDist[idx] = (d[bi][idx] * sizeI + d[bj][idx] * sizeJ) / (sizeI + sizeJ);
       }
       active.remove(bi);
       active.remove(bj);
@@ -1029,11 +997,7 @@ class AlignmentEngine {
   /// aligned version of its representative row (which may have inserted
   /// gaps), insert matching gap columns into every row of the profile so
   /// they all stay the same length and column-consistent.
-  static List<String> _propagateGaps(
-    List<String> oldRows,
-    String oldRep,
-    String newRep,
-  ) {
+  static List<String> _propagateGaps(List<String> oldRows, String oldRep, String newRep) {
     // Walk newRep; whenever we consume a non-gap char it corresponds to the
     // next char of oldRep (and thus the next column of every old row).
     // Whenever newRep has a gap, insert a gap at that column in every row.
@@ -1046,9 +1010,7 @@ class AlignmentEngine {
         }
       } else {
         for (int r = 0; r < oldRows.length; r++) {
-          result[r].write(
-            oldCol < oldRows[r].length ? oldRows[r][oldCol] : '-',
-          );
+          result[r].write(oldCol < oldRows[r].length ? oldRows[r][oldCol] : '-');
         }
         oldCol++;
       }
@@ -1145,8 +1107,7 @@ class AlignmentEngine {
     for (int i = 1; i <= n; i++) {
       for (int j = 1; j <= m; j++) {
         final diag =
-            dp[idx(i - 1, j - 1)] +
-            _columnScore(profA[i - 1], profB[j - 1], scorer, gapCost);
+            dp[idx(i - 1, j - 1)] + _columnScore(profA[i - 1], profB[j - 1], scorer, gapCost);
         final up = dp[idx(i - 1, j)] + gapCost;
         final left = dp[idx(i, j - 1)] + gapCost;
         dp[idx(i, j)] = max(diag, max(up, left));
@@ -1161,8 +1122,7 @@ class AlignmentEngine {
     while (i > 0 || j > 0) {
       final cur = dp[idx(i, j)];
       final diagVal = (i > 0 && j > 0)
-          ? dp[idx(i - 1, j - 1)] +
-                _columnScore(profA[i - 1], profB[j - 1], scorer, gapCost)
+          ? dp[idx(i - 1, j - 1)] + _columnScore(profA[i - 1], profB[j - 1], scorer, gapCost)
           : null;
       if (diagVal != null && (cur - diagVal).abs() < 1e-9) {
         colsA.add(i - 1);
@@ -1253,8 +1213,7 @@ class AlignmentEngine {
       final Map<int, double> newDist = {};
       for (final idx in active) {
         if (idx == bi || idx == bj) continue;
-        newDist[idx] =
-            (d[bi][idx] * sizeI + d[bj][idx] * sizeJ) / (sizeI + sizeJ);
+        newDist[idx] = (d[bi][idx] * sizeI + d[bj][idx] * sizeJ) / (sizeI + sizeJ);
       }
       active.remove(bi);
       active.remove(bj);
@@ -1395,10 +1354,7 @@ class AlignmentEngine {
     return (current, accepted);
   }
 
-  static List<List<double>> _kmerDistanceMatrix(
-    List<String> sequences, {
-    int k = 5,
-  }) {
+  static List<List<double>> _kmerDistanceMatrix(List<String> sequences, {int k = 5}) {
     final n = sequences.length;
     final sets = sequences.map((s) {
       final set = <String>{};

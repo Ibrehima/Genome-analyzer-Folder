@@ -11,10 +11,7 @@ class DocxExportEngine {
     final parts = <String, String>{
       '[Content_Types].xml': _contentTypesXml(),
       '_rels/.rels': _rootRelsXml(),
-      'docProps/core.xml': OoxmlUtils.coreProps(
-        title: data.title,
-        date: data.generatedAt,
-      ),
+      'docProps/core.xml': OoxmlUtils.coreProps(title: data.title, date: data.generatedAt),
       'docProps/app.xml': OoxmlUtils.appProps(),
       'word/document.xml': documentXml,
     };
@@ -121,11 +118,7 @@ class DocxExportEngine {
     final sb = StringBuffer();
     sb.write(_titleParagraph(data.title));
     if (data.subtitle.isNotEmpty) sb.write(_subtitleParagraph(data.subtitle));
-    sb.write(
-      _subtitleParagraph(
-        'Generated: ${data.generatedAt.toString().substring(0, 19)}',
-      ),
-    );
+    sb.write(_subtitleParagraph('Generated: ${data.generatedAt.toString().substring(0, 19)}'));
 
     for (final section in data.sections) {
       if (section.title.isNotEmpty) sb.write(_sectionHeading(section.title));

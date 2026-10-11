@@ -87,16 +87,12 @@ class _AssistantScreenState extends State<AssistantScreen> {
     final appState = context.read<AppState>();
 
     // Try to answer direct GC/length questions about a named sequence
-    final gcMatch = RegExp(
-      r'(gc content|gc%|gc)\s*(of|for)?\s*(.+)',
-    ).firstMatch(lower);
+    final gcMatch = RegExp(r'(gc content|gc%|gc)\s*(of|for)?\s*(.+)').firstMatch(lower);
     if (lower.contains('gc content') || lower.contains('gc%')) {
       final seq = _findSequenceMentioned(appState, lower);
       if (seq != null) {
         final gc = SequenceEngine.gcContent(seq.sequence);
-        _reply(
-          '${seq.name} has a GC content of ${gc.toStringAsFixed(2)}% over ${seq.length} bp.',
-        );
+        _reply('${seq.name} has a GC content of ${gc.toStringAsFixed(2)}% over ${seq.length} bp.');
         return;
       } else if (gcMatch != null) {
         _reply(
@@ -147,14 +143,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
       );
       return;
     }
-    if (_matchesAny(lower, [
-      'species',
-      'lineage',
-      'variant',
-      'identif',
-      'espèce',
-      'lignée',
-    ])) {
+    if (_matchesAny(lower, ['species', 'lineage', 'variant', 'identif', 'espèce', 'lignée'])) {
       _reply(
         'Opening Species / Variant Identification — I\'ll match your sequence against the local reference database (or GBIF online).',
         action: _actionButton(
@@ -266,22 +255,17 @@ class _AssistantScreenState extends State<AssistantScreen> {
     );
   }
 
-  bool _matchesAny(String text, List<String> keywords) =>
-      keywords.any((k) => text.contains(k));
+  bool _matchesAny(String text, List<String> keywords) => keywords.any((k) => text.contains(k));
 
   dynamic _findSequenceMentioned(AppState appState, String lower) {
-    for (final s in appState.sequences) {
+    for (final s in appState.sequencesInActiveProject) {
       if (lower.contains(s.name.toLowerCase())) return s;
     }
     return null;
   }
 
   void _reply(String text, {Widget? action}) {
-    setState(
-      () => _messages.add(
-        _ChatMessage(text: text, fromUser: false, action: action),
-      ),
-    );
+    setState(() => _messages.add(_ChatMessage(text: text, fromUser: false, action: action)));
     _scrollToEnd();
   }
 
@@ -296,8 +280,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
               controller: _scrollCtrl,
               padding: const EdgeInsets.all(16),
               itemCount: _messages.length,
-              itemBuilder: (context, i) =>
-                  _MessageBubble(message: _messages[i]),
+              itemBuilder: (context, i) => _MessageBubble(message: _messages[i]),
             ),
           ),
           _QuickChips(onTap: _handleQuery),
@@ -319,9 +302,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
                   const SizedBox(width: 8),
                   Container(
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: AppColors.gradAssistant,
-                      ),
+                      gradient: const LinearGradient(colors: AppColors.gradAssistant),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
@@ -385,9 +366,7 @@ class _MessageBubble extends StatelessWidget {
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.78,
-        ),
+        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
@@ -405,10 +384,7 @@ class _MessageBubble extends StatelessWidget {
           children: [
             Text(
               message.text,
-              style: TextStyle(
-                color: isUser ? Colors.white : AppColors.textDark,
-                fontSize: 13.5,
-              ),
+              style: TextStyle(color: isUser ? Colors.white : AppColors.textDark, fontSize: 13.5),
             ),
             if (message.action != null) message.action!,
           ],

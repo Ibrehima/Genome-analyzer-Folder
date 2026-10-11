@@ -116,10 +116,7 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
   ReportData _buildReport() {
     if (_pairwise != null) {
       final p = _pairwise!;
-      final variants = StatisticsEngine.callVariants(
-        p.alignedSeqA,
-        p.alignedSeqB,
-      );
+      final variants = StatisticsEngine.callVariants(p.alignedSeqA, p.alignedSeqB);
       return ReportData(
         title: 'Pairwise Alignment Report',
         subtitle:
@@ -154,17 +151,12 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
                 '${_usedNames.isNotEmpty ? _usedNames[0] : "Seq A"}:\n${p.alignedSeqA}\n\n'
                 '${_usedNames.length > 1 ? _usedNames[1] : "Seq B"}:\n${p.alignedSeqB}',
           ),
-          if (p.notes.isNotEmpty)
-            ReportSection(title: 'Notes', bodyText: p.notes.join('\n\n')),
+          if (p.notes.isNotEmpty) ReportSection(title: 'Notes', bodyText: p.notes.join('\n\n')),
           ReportSection(
             title: 'Detected Variants (${variants.length})',
             table: [
               ['Position', 'Reference', 'Query', 'Type'],
-              ...variants
-                  .take(50)
-                  .map(
-                    (v) => ['${v.position + 1}', v.refBase, v.altBase, v.type],
-                  ),
+              ...variants.take(50).map((v) => ['${v.position + 1}', v.refBase, v.altBase, v.type]),
             ],
           ),
         ],
@@ -184,10 +176,7 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
               ['Method', m.method.label],
               ['Sequences aligned', '${m.names.length}'],
               ['Alignment length', '${m.consensusLength}'],
-              [
-                'Average pairwise identity',
-                '${m.averageIdentity.toStringAsFixed(2)}%',
-              ],
+              ['Average pairwise identity', '${m.averageIdentity.toStringAsFixed(2)}%'],
               ['Computed in', '${m.elapsedMs.toStringAsFixed(1)} ms'],
               if (m.method.supportsRefinement)
                 ['Refinement passes accepted', '${m.refinementPasses}'],
@@ -200,12 +189,8 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
               (i) => '${m.names[i]}:\n${m.alignedSequences[i]}',
             ).join('\n\n'),
           ),
-          ReportSection(
-            title: 'Consensus Sequence',
-            bodyText: m.consensusSequence,
-          ),
-          if (m.notes.isNotEmpty)
-            ReportSection(title: 'Notes', bodyText: m.notes.join('\n\n')),
+          ReportSection(title: 'Consensus Sequence', bodyText: m.consensusSequence),
+          if (m.notes.isNotEmpty) ReportSection(title: 'Notes', bodyText: m.notes.join('\n\n')),
         ],
       );
     }
@@ -262,10 +247,7 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
         title: const Text('Sequence Alignment'),
         actions: [
           if (_pairwise != null || _msa != null)
-            ExportMenuButton(
-              reportBuilder: _buildReport,
-              moduleType: 'Sequence Alignment',
-            ),
+            ExportMenuButton(reportBuilder: _buildReport, moduleType: 'Sequence Alignment'),
           const SizedBox(width: 8),
         ],
       ),
@@ -276,8 +258,7 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
             selectedIds: _selectedIds,
             multiple: true,
             onChanged: (v) => setState(() => _selectedIds = v),
-            label:
-                'Select 2+ sequences (2 = pairwise, 3+ = multiple alignment)',
+            label: 'Select 2+ sequences (2 = pairwise, 3+ = multiple alignment)',
           ),
           const SizedBox(height: 14),
           if (_selectedIds.length == 2) ...[
@@ -299,10 +280,7 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
               }).toList(),
             ),
             const SizedBox(height: 6),
-            Text(
-              _mode.description,
-              style: TextStyle(fontSize: 11.5, color: Colors.grey.shade600),
-            ),
+            Text(_mode.description, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade600)),
             const SizedBox(height: 14),
           ] else if (_selectedIds.length >= 3) ...[
             const Text(
@@ -341,13 +319,10 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
             gapExtendPenalty: _gapExtendPenalty,
             autoBand: _autoBand,
             isProteinSelection: isProteinSelection,
-            showSeedOptions:
-                _selectedIds.length == 2 &&
-                _mode == AlignmentMode.heuristicSeedExtend,
+            showSeedOptions: _selectedIds.length == 2 && _mode == AlignmentMode.heuristicSeedExtend,
             seedLength: _seedLength,
             extendWindow: _extendWindow,
-            showRefinementOptions:
-                _selectedIds.length >= 3 && _msaMethod == MsaMethod.muscle,
+            showRefinementOptions: _selectedIds.length >= 3 && _msaMethod == MsaMethod.muscle,
             refinementIterations: _refinementIterations,
             onMatrixChanged: (v) => setState(() => _matrixType = v),
             onGapModelChanged: (v) => setState(() => _gapModel = v),
@@ -359,8 +334,7 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
             onAutoBandChanged: (v) => setState(() => _autoBand = v),
             onSeedLengthChanged: (v) => setState(() => _seedLength = v),
             onExtendWindowChanged: (v) => setState(() => _extendWindow = v),
-            onRefinementIterationsChanged: (v) =>
-                setState(() => _refinementIterations = v),
+            onRefinementIterationsChanged: (v) => setState(() => _refinementIterations = v),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -371,18 +345,14 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.align_horizontal_left_rounded),
               label: Text(_running ? 'Aligning...' : 'Run Alignment'),
             ),
           ),
           const SizedBox(height: 20),
-          if (_pairwise != null)
-            _PairwiseResultView(result: _pairwise!, names: _usedNames),
+          if (_pairwise != null) _PairwiseResultView(result: _pairwise!, names: _usedNames),
           if (_msa != null) _MsaResultView(result: _msa!),
         ],
       ),
@@ -455,10 +425,7 @@ class _AdvancedOptionsPanel extends StatelessWidget {
           SubstitutionMatrixType.blosum62,
           SubstitutionMatrixType.pam250,
         ]
-      : const [
-          SubstitutionMatrixType.simple,
-          SubstitutionMatrixType.dnaTransitionTransversion,
-        ];
+      : const [SubstitutionMatrixType.simple, SubstitutionMatrixType.dnaTransitionTransversion];
 
   @override
   Widget build(BuildContext context) {
@@ -473,19 +440,12 @@ class _AdvancedOptionsPanel extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.tune,
-                    size: 18,
-                    color: AppColors.primaryBlue,
-                  ),
+                  const Icon(Icons.tune, size: 18, color: AppColors.primaryBlue),
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
                       'Advanced scoring & performance options',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
                     ),
                   ),
                   Icon(expanded ? Icons.expand_less : Icons.expand_more),
@@ -501,10 +461,7 @@ class _AdvancedOptionsPanel extends StatelessWidget {
                 children: [
                   const Text(
                     'Substitution scheme',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12.5,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12.5),
                   ),
                   const SizedBox(height: 6),
                   DropdownButton<SubstitutionMatrixType>(
@@ -516,10 +473,7 @@ class _AdvancedOptionsPanel extends StatelessWidget {
                         .map(
                           (m) => DropdownMenuItem(
                             value: m,
-                            child: Text(
-                              m.label,
-                              style: const TextStyle(fontSize: 13),
-                            ),
+                            child: Text(m.label, style: const TextStyle(fontSize: 13)),
                           ),
                         )
                         .toList(),
@@ -552,22 +506,13 @@ class _AdvancedOptionsPanel extends StatelessWidget {
                   const SizedBox(height: 16),
                   const Text(
                     'Gap penalty model',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12.5,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12.5),
                   ),
                   const SizedBox(height: 6),
                   SegmentedButton<GapModel>(
                     segments: const [
-                      ButtonSegment(
-                        value: GapModel.linear,
-                        label: Text('Linear'),
-                      ),
-                      ButtonSegment(
-                        value: GapModel.affine,
-                        label: Text('Affine (Gotoh)'),
-                      ),
+                      ButtonSegment(value: GapModel.linear, label: Text('Linear')),
+                      ButtonSegment(value: GapModel.affine, label: Text('Affine (Gotoh)')),
                     ],
                     selected: {gapModel},
                     onSelectionChanged: (v) => onGapModelChanged(v.first),
@@ -605,10 +550,7 @@ class _AdvancedOptionsPanel extends StatelessWidget {
                     dense: true,
                     title: const Text(
                       'Auto-band long similar sequences',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
                     ),
                     subtitle: const Text(
                       'Speeds up global alignment of long (800+ nt), '
@@ -622,10 +564,7 @@ class _AdvancedOptionsPanel extends StatelessWidget {
                     const SizedBox(height: 16),
                     const Text(
                       'Seed & extend heuristic settings',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12.5,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12.5),
                     ),
                     const SizedBox(height: 6),
                     Row(
@@ -652,20 +591,14 @@ class _AdvancedOptionsPanel extends StatelessWidget {
                       'Shorter seeds find more (but less specific) hits; a '
                       'larger extend window aligns more context around each '
                       'seed at the cost of speed.',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade600,
-                      ),
+                      style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                     ),
                   ],
                   if (showRefinementOptions) ...[
                     const SizedBox(height: 16),
                     const Text(
                       'MUSCLE-style refinement',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12.5,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12.5),
                     ),
                     const SizedBox(height: 6),
                     _NumberField(
@@ -680,10 +613,7 @@ class _AdvancedOptionsPanel extends StatelessWidget {
                       'if it scores better. More passes can improve accuracy '
                       'further at extra computation cost; 0 disables '
                       'refinement (pure profile-progressive alignment).',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade600,
-                      ),
+                      style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                     ),
                   ],
                 ],
@@ -700,11 +630,7 @@ class _NumberField extends StatelessWidget {
   final int value;
   final ValueChanged<int> onChanged;
 
-  const _NumberField({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-  });
+  const _NumberField({required this.label, required this.value, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -789,15 +715,9 @@ class _PairwiseResultView extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
-                        Icons.info_outline,
-                        size: 16,
-                        color: Color(0xFFEF6C00),
-                      ),
+                      const Icon(Icons.info_outline, size: 16, color: Color(0xFFEF6C00)),
                       const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(n, style: const TextStyle(fontSize: 11.5)),
-                      ),
+                      Expanded(child: Text(n, style: const TextStyle(fontSize: 11.5))),
                     ],
                   ),
                 ),
@@ -845,11 +765,7 @@ class _PairwiseResultView extends StatelessWidget {
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              color: color,
-              fontSize: 15,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w800, color: color, fontSize: 15),
           ),
           Text(label, style: TextStyle(fontSize: 10.5, color: color)),
         ],
@@ -893,15 +809,9 @@ class _MsaResultView extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
-                        Icons.info_outline,
-                        size: 16,
-                        color: Color(0xFFEF6C00),
-                      ),
+                      const Icon(Icons.info_outline, size: 16, color: Color(0xFFEF6C00)),
                       const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(n, style: const TextStyle(fontSize: 11.5)),
-                      ),
+                      Expanded(child: Text(n, style: const TextStyle(fontSize: 11.5))),
                     ],
                   ),
                 ),
@@ -917,28 +827,16 @@ class _MsaResultView extends StatelessWidget {
                   children: [
                     Text(
                       result.names[i],
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 12,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
                     ),
-                    ColoredSequenceView(
-                      sequence: result.alignedSequences[i],
-                      fontSize: 12,
-                    ),
+                    ColoredSequenceView(sequence: result.alignedSequences[i], fontSize: 12),
                   ],
                 ),
               ),
             ),
             const Divider(),
-            const Text(
-              'Consensus',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
-            ),
-            ColoredSequenceView(
-              sequence: result.consensusSequence,
-              fontSize: 12,
-            ),
+            const Text('Consensus', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
+            ColoredSequenceView(sequence: result.consensusSequence, fontSize: 12),
             const SizedBox(height: 8),
             const SequenceLegend(),
           ],

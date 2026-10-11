@@ -9,11 +9,7 @@ import '../models/analysis_models.dart';
 class Structure3DView extends StatefulWidget {
   final Structure3DResult structure;
   final double height;
-  const Structure3DView({
-    super.key,
-    required this.structure,
-    this.height = 340,
-  });
+  const Structure3DView({super.key, required this.structure, this.height = 340});
 
   @override
   State<Structure3DView> createState() => _Structure3DViewState();
@@ -146,8 +142,7 @@ class _Structure3DPainter extends CustomPainter {
       final depth = depths[idx];
       final alpha = (1 - (depth.abs() / 500)).clamp(0.35, 1.0);
       final radius = (3.5 * (1 - depth / 600)).clamp(1.5, 6.0);
-      final paint = Paint()
-        ..color = _colorFor(atom.kind).withValues(alpha: alpha);
+      final paint = Paint()..color = _colorFor(atom.kind).withValues(alpha: alpha);
       canvas.drawCircle(projected[idx], radius, paint);
     }
   }

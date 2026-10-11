@@ -5,11 +5,7 @@ import 'sequence_engine.dart';
 /// Species / lineage / variant identification engine using k-mer similarity
 /// against the local curated reference database (BLAST-like heuristic).
 class IdentificationEngine {
-  static List<SpeciesMatch> identify(
-    String querySequence, {
-    int k = 6,
-    int topN = 10,
-  }) {
+  static List<SpeciesMatch> identify(String querySequence, {int k = 6, int topN = 10}) {
     final querySet = SequenceEngine.kmerSet(querySequence, k);
     final List<SpeciesMatch> matches = [];
 
@@ -88,17 +84,13 @@ class IdentificationEngine {
   /// broad label. Confidence directly reflects the underlying k-mer
   /// similarity score of the best match — this is an identification-driven
   /// heuristic, not an independent domain classifier.
-  static DomainClassificationResult classifyDomain(
-    String querySequence, {
-    int k = 6,
-  }) {
+  static DomainClassificationResult classifyDomain(String querySequence, {int k = 6}) {
     final matches = identify(querySequence, k: k, topN: 1);
     if (matches.isEmpty) {
       return DomainClassificationResult(
         domainLabel: 'Unknown',
         confidence: 0,
-        basis:
-            'No reference match could be computed (empty or invalid query sequence).',
+        basis: 'No reference match could be computed (empty or invalid query sequence).',
       );
     }
     final best = matches.first;

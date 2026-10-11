@@ -135,18 +135,10 @@ class TargetAnalysisEngine {
     for (int i = start; i < end; i++) {
       sum += _kyteDoolittle[protein[i]] ?? 0;
     }
-    return TransmembraneRegion(
-      start: start,
-      end: end,
-      meanHydrophobicity: sum / (end - start),
-    );
+    return TransmembraneRegion(start: start, end: end, meanHydrophobicity: sum / (end - start));
   }
 
-  static bool _overlapsAny(
-    int start,
-    int end,
-    List<TransmembraneRegion> regions,
-  ) {
+  static bool _overlapsAny(int start, int end, List<TransmembraneRegion> regions) {
     for (final r in regions) {
       if (start < r.end && end > r.start) return true;
     }
@@ -191,9 +183,7 @@ class TargetAnalysisEngine {
     }
     // Keep only local maxima-ish by removing heavily overlapping lower-score
     // windows: greedy non-max suppression sorted by score desc.
-    candidates.sort(
-      (a, b) => b.antigenicityScore.compareTo(a.antigenicityScore),
-    );
+    candidates.sort((a, b) => b.antigenicityScore.compareTo(a.antigenicityScore));
     final kept = <EpitopeCandidate>[];
     for (final c in candidates) {
       final overlaps = kept.any((k) => c.start < k.end && c.end > k.start);

@@ -31,9 +31,7 @@ class ConnectivityBadge extends StatelessWidget {
               Icon(
                 online ? Icons.wifi : Icons.wifi_off,
                 size: 14,
-                color: online
-                    ? const Color(0xFF2E7D32)
-                    : const Color(0xFFEF6C00),
+                color: online ? const Color(0xFF2E7D32) : const Color(0xFFEF6C00),
               ),
             const SizedBox(width: 6),
             Text(
@@ -41,9 +39,7 @@ class ConnectivityBadge extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: online
-                    ? const Color(0xFF2E7D32)
-                    : const Color(0xFFEF6C00),
+                color: online ? const Color(0xFF2E7D32) : const Color(0xFFEF6C00),
               ),
             ),
           ],

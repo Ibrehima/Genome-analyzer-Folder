@@ -37,15 +37,9 @@ class _AnnotationScreenState extends State<AnnotationScreen> {
     final labelCtrl = TextEditingController(
       text: fromOrf != null ? 'ORF (${fromOrf.length} nt)' : '',
     );
-    final startCtrl = TextEditingController(
-      text: fromOrf != null ? '${fromOrf.start + 1}' : '',
-    );
-    final endCtrl = TextEditingController(
-      text: fromOrf != null ? '${fromOrf.end}' : '',
-    );
-    final noteCtrl = TextEditingController(
-      text: fromOrf != null ? fromOrf.proteinPreview : '',
-    );
+    final startCtrl = TextEditingController(text: fromOrf != null ? '${fromOrf.start + 1}' : '');
+    final endCtrl = TextEditingController(text: fromOrf != null ? '${fromOrf.end}' : '');
+    final noteCtrl = TextEditingController(text: fromOrf != null ? fromOrf.proteinPreview : '');
     String featureType = fromOrf != null ? 'ORF' : 'custom';
     bool forward = fromOrf?.forwardStrand ?? true;
 
@@ -53,9 +47,7 @@ class _AnnotationScreenState extends State<AnnotationScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: SizedBox(
@@ -80,9 +72,7 @@ class _AnnotationScreenState extends State<AnnotationScreen> {
                         child: TextField(
                           controller: startCtrl,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: 'Start (1-based)',
-                          ),
+                          decoration: const InputDecoration(labelText: 'Start (1-based)'),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -101,48 +91,28 @@ class _AnnotationScreenState extends State<AnnotationScreen> {
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           initialValue: featureType,
-                          decoration: const InputDecoration(
-                            labelText: 'Feature type',
-                          ),
-                          items:
-                              const [
-                                    'gene',
-                                    'CDS',
-                                    'ORF',
-                                    'exon',
-                                    'motif',
-                                    'custom',
-                                  ]
-                                  .map(
-                                    (t) => DropdownMenuItem(
-                                      value: t,
-                                      child: Text(t),
-                                    ),
-                                  )
-                                  .toList(),
-                          onChanged: (v) =>
-                              setDialogState(() => featureType = v ?? 'custom'),
+                          decoration: const InputDecoration(labelText: 'Feature type'),
+                          items: const [
+                            'gene',
+                            'CDS',
+                            'ORF',
+                            'exon',
+                            'motif',
+                            'custom',
+                          ].map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
+                          onChanged: (v) => setDialogState(() => featureType = v ?? 'custom'),
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: DropdownButtonFormField<bool>(
                           initialValue: forward,
-                          decoration: const InputDecoration(
-                            labelText: 'Strand',
-                          ),
+                          decoration: const InputDecoration(labelText: 'Strand'),
                           items: const [
-                            DropdownMenuItem(
-                              value: true,
-                              child: Text('+ (forward)'),
-                            ),
-                            DropdownMenuItem(
-                              value: false,
-                              child: Text('- (reverse)'),
-                            ),
+                            DropdownMenuItem(value: true, child: Text('+ (forward)')),
+                            DropdownMenuItem(value: false, child: Text('- (reverse)')),
                           ],
-                          onChanged: (v) =>
-                              setDialogState(() => forward = v ?? true),
+                          onChanged: (v) => setDialogState(() => forward = v ?? true),
                         ),
                       ),
                     ],
@@ -157,10 +127,7 @@ class _AnnotationScreenState extends State<AnnotationScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx),
-                        child: const Text('Cancel'),
-                      ),
+                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
                       const SizedBox(width: 8),
                       ElevatedButton(
                         onPressed: () async {
@@ -195,10 +162,7 @@ class _AnnotationScreenState extends State<AnnotationScreen> {
     );
   }
 
-  Future<void> _downloadGff3(
-    String seqId,
-    List<SequenceAnnotation> annots,
-  ) async {
+  Future<void> _downloadGff3(String seqId, List<SequenceAnnotation> annots) async {
     final gff = AnnotationEngine.toGff3(seqId, annots);
     await FileSaver.instance.saveFile(
       name: 'annotations_${seqId.substring(0, 6)}',
@@ -208,10 +172,7 @@ class _AnnotationScreenState extends State<AnnotationScreen> {
     );
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('GFF3 file downloaded.'),
-          backgroundColor: AppColors.success,
-        ),
+        const SnackBar(content: Text('GFF3 file downloaded.'), backgroundColor: AppColors.success),
       );
     }
   }
@@ -261,9 +222,7 @@ class _AnnotationScreenState extends State<AnnotationScreen> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final selectedSeq = _selectedId != null
-        ? appState.getSequenceById(_selectedId!)
-        : null;
+    final selectedSeq = _selectedId != null ? appState.getSequenceById(_selectedId!) : null;
     final annots = _selectedId != null
         ? appState.annotationsFor(_selectedId!)
         : <SequenceAnnotation>[];
@@ -310,22 +269,15 @@ class _AnnotationScreenState extends State<AnnotationScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: _running
-                    ? null
-                    : () => _runOrfFinder(selectedSeq.sequence),
+                onPressed: _running ? null : () => _runOrfFinder(selectedSeq.sequence),
                 icon: _running
                     ? const SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.search),
-                label: Text(
-                  _running ? 'Scanning...' : 'Find ORFs (6-frame scan)',
-                ),
+                label: Text(_running ? 'Scanning...' : 'Find ORFs (6-frame scan)'),
               ),
             ),
           const SizedBox(height: 18),
@@ -343,29 +295,19 @@ class _AnnotationScreenState extends State<AnnotationScreen> {
                     child: ListTile(
                       dense: true,
                       leading: CircleAvatar(
-                        backgroundColor: AppColors.gradAnnotation.first
-                            .withValues(alpha: 0.15),
+                        backgroundColor: AppColors.gradAnnotation.first.withValues(alpha: 0.15),
                         child: Text(
                           'F${o.frame}',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
                         ),
                       ),
                       title: Text(
                         '${o.start + 1}-${o.end} (${o.length} nt) · ${o.forwardStrand ? "+" : "-"} strand',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                       subtitle: Text(
                         o.proteinPreview,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontFamily: 'monospace',
-                        ),
+                        style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.bookmark_add_outlined, size: 20),
@@ -388,28 +330,18 @@ class _AnnotationScreenState extends State<AnnotationScreen> {
                 margin: const EdgeInsets.only(bottom: 8),
                 child: ListTile(
                   dense: true,
-                  leading: const Icon(
-                    Icons.label_important_outline,
-                    color: AppColors.primaryBlue,
-                  ),
+                  leading: const Icon(Icons.label_important_outline, color: AppColors.primaryBlue),
                   title: Text(
                     a.label,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text(
                     '${a.featureType} · ${a.start + 1}-${a.end} · ${a.forwardStrand ? "+" : "-"}',
                     style: const TextStyle(fontSize: 11),
                   ),
                   trailing: IconButton(
-                    icon: const Icon(
-                      Icons.delete_outline,
-                      color: AppColors.danger,
-                    ),
-                    onPressed: () =>
-                        context.read<AppState>().removeAnnotation(a.id),
+                    icon: const Icon(Icons.delete_outline, color: AppColors.danger),
+                    onPressed: () => context.read<AppState>().removeAnnotation(a.id),
                   ),
                 ),
               ),

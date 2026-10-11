@@ -13,9 +13,7 @@ class ExcelExportEngine {
 
     void writeRow(List<String> values, {bool bold = false}) {
       for (int c = 0; c < values.length; c++) {
-        final cell = sheet.cell(
-          CellIndex.indexByColumnRow(columnIndex: c, rowIndex: rowIdx),
-        );
+        final cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: c, rowIndex: rowIdx));
         cell.value = TextCellValue(values[c]);
         if (bold) {
           cell.cellStyle = CellStyle(
@@ -59,9 +57,7 @@ class ExcelExportEngine {
         final s = excel[safeName];
         for (int r = 0; r < section.table!.length; r++) {
           for (int c = 0; c < section.table![r].length; c++) {
-            final cell = s.cell(
-              CellIndex.indexByColumnRow(columnIndex: c, rowIndex: r),
-            );
+            final cell = s.cell(CellIndex.indexByColumnRow(columnIndex: c, rowIndex: r));
             cell.value = TextCellValue(section.table![r][c]);
             if (r == 0) {
               cell.cellStyle = CellStyle(

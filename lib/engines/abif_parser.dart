@@ -39,9 +39,7 @@ class AbifParser {
     for (int i = 0; i < numDirEntries; i++) {
       final entryOffset = dirOffset + i * 28;
       if (entryOffset + 28 > bytes.length) break;
-      final name = String.fromCharCodes(
-        bytes.sublist(entryOffset, entryOffset + 4),
-      );
+      final name = String.fromCharCodes(bytes.sublist(entryOffset, entryOffset + 4));
       final number = bd.getInt32(entryOffset + 4, Endian.big);
       final numElements = bd.getInt32(entryOffset + 12, Endian.big);
       final dataSize = bd.getInt32(entryOffset + 16, Endian.big);
@@ -78,9 +76,6 @@ class AbifParser {
   /// True if [bytes] look like an ABIF (.ab1) binary trace file.
   static bool looksLikeAbif(Uint8List bytes) {
     if (bytes.length < 4) return false;
-    return bytes[0] == 0x41 &&
-        bytes[1] == 0x42 &&
-        bytes[2] == 0x49 &&
-        bytes[3] == 0x46; // "ABIF"
+    return bytes[0] == 0x41 && bytes[1] == 0x42 && bytes[2] == 0x49 && bytes[3] == 0x46; // "ABIF"
   }
 }

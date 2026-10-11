@@ -76,9 +76,7 @@ class MetabolomicsEngine {
       final element = match.group(1);
       if (element == null || element.isEmpty) continue;
       final countStr = match.group(2);
-      final count = (countStr == null || countStr.isEmpty)
-          ? 1
-          : int.parse(countStr);
+      final count = (countStr == null || countStr.isEmpty) ? 1 : int.parse(countStr);
       counts[element] = (counts[element] ?? 0) + count;
     }
     return counts;
@@ -126,8 +124,7 @@ class MetabolomicsEngine {
   }
 
   static List<String> allClasses() =>
-      MetaboliteDatabase.records.map((m) => m.metaboliteClass).toSet().toList()
-        ..sort();
+      MetaboliteDatabase.records.map((m) => m.metaboliteClass).toSet().toList()..sort();
 
   static List<String> allPathways() =>
       MetaboliteDatabase.records.map((m) => m.pathway).toSet().toList()..sort();

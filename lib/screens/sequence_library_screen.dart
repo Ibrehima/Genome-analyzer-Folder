@@ -10,6 +10,7 @@ import '../data/reference_database.dart';
 import '../services/app_state.dart';
 import '../utils/app_theme.dart';
 import '../widgets/colored_sequence_view.dart';
+import '../widgets/project_switcher.dart';
 
 enum _SortMode { dateDesc, dateAsc, nameAsc, lengthDesc, lengthAsc }
 
@@ -40,18 +41,14 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
         final bytes = file.bytes;
         if (bytes != null) {
           final content = utf8.decode(bytes, allowMalformed: true);
-          final seqs = SequenceEngine.parseAuto(
-            content,
-            source: 'upload:${file.name}',
-          );
+          final seqs = SequenceEngine.parseAuto(content, source: 'upload:${file.name}');
           if (seqs.isEmpty) {
             _showSnack('No valid sequences found in file.', error: true);
           } else if (mounted) {
-            await context.read<AppState>().addSequences(seqs);
+            final appState = context.read<AppState>();
+            await appState.addSequences(seqs, projectId: appState.activeProjectId);
             if (mounted) {
-              _showSnack(
-                'Imported ${seqs.length} sequence(s) from ${file.name}.',
-              );
+              _showSnack('Imported ${seqs.length} sequence(s) from ${file.name}.');
             }
           }
         }
@@ -65,10 +62,7 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
 
   void _showSnack(String msg, {bool error = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        backgroundColor: error ? AppColors.danger : AppColors.success,
-      ),
+      SnackBar(content: Text(msg), backgroundColor: error ? AppColors.danger : AppColors.success),
     );
   }
 
@@ -110,10 +104,7 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      child: const Text('Cancel'),
-                    ),
+                    TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
                     const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () async {
@@ -121,10 +112,7 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
                         if (raw.isEmpty) return;
                         List<BioSequence> parsed;
                         if (raw.startsWith('>')) {
-                          parsed = SequenceEngine.parseFasta(
-                            raw,
-                            source: 'manual',
-                          );
+                          parsed = SequenceEngine.parseFasta(raw, source: 'manual');
                         } else {
                           final clean = SequenceEngine.sanitize(raw);
                           parsed = [
@@ -138,7 +126,8 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
                             ),
                           ];
                         }
-                        await context.read<AppState>().addSequences(parsed);
+                        final appState = context.read<AppState>();
+                        await appState.addSequences(parsed, projectId: appState.activeProjectId);
                         if (ctx.mounted) Navigator.pop(ctx);
                         _showSnack('Added ${parsed.length} sequence(s).');
                       },
@@ -167,7 +156,8 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
             tags: ['sample', r.markerGene],
           ),
         );
-    await context.read<AppState>().addSequences(samples.toList());
+    final appState = context.read<AppState>();
+    await appState.addSequences(samples.toList(), projectId: appState.activeProjectId);
     _showSnack('Loaded ${samples.length} sample sequences.');
   }
 
@@ -217,18 +207,12 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
                       Expanded(
                         child: Text(
                           seq.name,
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
                         ),
                       ),
                       if (seq.labCode.isNotEmpty)
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: AppColors.primaryBlue.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
@@ -247,10 +231,7 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
                   ),
                   Text(
                     seq.description,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textMuted,
-                    ),
+                    style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
                   ),
                   const SizedBox(height: 10),
                   Wrap(
@@ -264,13 +245,8 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
                           'GC ${SequenceEngine.gcContent(seq.sequence).toStringAsFixed(1)}%',
                         ),
                       ),
-                      Chip(
-                        label: Text(
-                          'Added ${seq.dateAdded.toString().substring(0, 10)}',
-                        ),
-                      ),
-                      if (seq.hasQuality)
-                        const Chip(label: Text('FASTQ (with quality)')),
+                      Chip(label: Text('Added ${seq.dateAdded.toString().substring(0, 10)}')),
+                      if (seq.hasQuality) const Chip(label: Text('FASTQ (with quality)')),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -278,10 +254,7 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
                   const SizedBox(height: 8),
                   Flexible(
                     child: SingleChildScrollView(
-                      child: ColoredSequenceView(
-                        sequence: seq.sequence,
-                        fontSize: 12,
-                      ),
+                      child: ColoredSequenceView(sequence: seq.sequence, fontSize: 12),
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -293,10 +266,7 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
                         icon: const Icon(Icons.download, size: 18),
                         label: const Text('Download FASTA'),
                       ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx),
-                        child: const Text('Close'),
-                      ),
+                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
                     ],
                   ),
                 ],
@@ -331,9 +301,7 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
         list.sort((a, b) => a.dateAdded.compareTo(b.dateAdded));
         break;
       case _SortMode.nameAsc:
-        list.sort(
-          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
-        );
+        list.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
         break;
       case _SortMode.lengthDesc:
         list.sort((a, b) => b.length.compareTo(a.length));
@@ -347,13 +315,14 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final sequences = context.watch<AppState>().sequences;
+    final sequences = context.watch<AppState>().sequencesInActiveProject;
     final filtered = _filteredSorted(sequences);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sequence Library'),
         actions: [
+          const ProjectSwitcher(),
           if (sequences.isNotEmpty)
             IconButton(
               tooltip: 'Download all as multi-FASTA',
@@ -386,10 +355,7 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
                 ? const SizedBox(
                     width: 18,
                     height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                   )
                 : const Icon(Icons.upload_file),
             label: const Text('Upload'),
@@ -425,10 +391,7 @@ class _SequenceLibraryScreenState extends State<SequenceLibraryScreen> {
                           ),
                         );
                       }
-                      final cols = (constraints.maxWidth / 380).floor().clamp(
-                        2,
-                        4,
-                      );
+                      final cols = (constraints.maxWidth / 380).floor().clamp(2, 4);
                       return GridView.builder(
                         padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -521,10 +484,7 @@ class _FilterBar extends StatelessWidget {
                 isDense: true,
                 prefixIcon: Icon(Icons.search, size: 20),
                 hintText: 'Search name, lab code, tag...',
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               ),
             ),
           ),
@@ -534,16 +494,11 @@ class _FilterBar extends StatelessWidget {
               initialValue: typeFilter,
               decoration: const InputDecoration(
                 isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               ),
               items: [
                 const DropdownMenuItem(value: null, child: Text('All types')),
-                ...SequenceType.values.map(
-                  (t) => DropdownMenuItem(value: t, child: Text(t.label)),
-                ),
+                ...SequenceType.values.map((t) => DropdownMenuItem(value: t, child: Text(t.label))),
               ],
               onChanged: onTypeChanged,
             ),
@@ -554,16 +509,10 @@ class _FilterBar extends StatelessWidget {
               initialValue: sortMode,
               decoration: const InputDecoration(
                 isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               ),
               items: _SortMode.values
-                  .map(
-                    (m) =>
-                        DropdownMenuItem(value: m, child: Text(_sortLabel(m))),
-                  )
+                  .map((m) => DropdownMenuItem(value: m, child: Text(_sortLabel(m))))
                   .toList(),
               onChanged: (v) {
                 if (v != null) onSortChanged(v);
@@ -648,10 +597,7 @@ class _SequenceTile extends StatelessWidget {
         ],
       ),
     );
-    return Card(
-      margin: card ? EdgeInsets.zero : const EdgeInsets.only(bottom: 10),
-      child: tile,
-    );
+    return Card(margin: card ? EdgeInsets.zero : const EdgeInsets.only(bottom: 10), child: tile);
   }
 }
 

@@ -31,8 +31,7 @@ class ReferenceDatabase {
       id: 'REF003',
       scientificName: 'Bacillus subtilis',
       commonName: 'Hay bacillus',
-      lineage:
-          'Bacteria;Firmicutes;Bacilli;Bacillales;Bacillaceae;Bacillus;Bacillus subtilis',
+      lineage: 'Bacteria;Firmicutes;Bacilli;Bacillales;Bacillaceae;Bacillus;Bacillus subtilis',
       markerGene: '16S rRNA',
       sequence:
           'CTCGACAGCTACGCTAGCTGCACGAGAGGTACCCTAGCAAGGTCGAGCAGTTGTCTTTCAATGGACACGCCATGGTTTTTGGCGATGCAAGGCTGAACACTGATGATGAGTCTCGCTAGTTGCGGGATTGGCAAAGTATTCTTTTACTGGATAAGCCCAAATCCACTGCTATTCACTTTCACTGCCGTTAGTAGTCGGAGTTAGGTCGTGTGGGTAACTCCCATCAGACGAGGTGCCTGA',
@@ -81,8 +80,7 @@ class ReferenceDatabase {
       id: 'REF008',
       scientificName: 'Homo sapiens',
       commonName: 'Human',
-      lineage:
-          'Eukaryota;Animalia;Chordata;Mammalia;Primates;Hominidae;Homo;Homo sapiens',
+      lineage: 'Eukaryota;Animalia;Chordata;Mammalia;Primates;Hominidae;Homo;Homo sapiens',
       markerGene: 'COI (mtDNA)',
       sequence:
           'ATTATCAGGGTCCACAATGCCAATAAAAATATTACTAGGTAGGTCCCTTCCCAACCGGAGCCCGCTAATTTATTCACTATGTGAAAATGAGTTTATTTGCTTCAATTACCCAGTCCGACAAAATTCTGTGGTTCGGTTATAATTCAATCTCGTTAACTTAATTTGACGACTATATATAACTAGATTTGGTCTTCCTTCGTCAGTATGTACTCTACAATTACATTTTTAACCAGTTTGCTC',
@@ -91,8 +89,7 @@ class ReferenceDatabase {
       id: 'REF009',
       scientificName: 'Mus musculus',
       commonName: 'House mouse',
-      lineage:
-          'Eukaryota;Animalia;Chordata;Mammalia;Rodentia;Muridae;Mus;Mus musculus',
+      lineage: 'Eukaryota;Animalia;Chordata;Mammalia;Rodentia;Muridae;Mus;Mus musculus',
       markerGene: 'COI (mtDNA)',
       sequence:
           'CCAAGCTGGATATTAATTCCGAACCGTGTCACAAAAGCGTAGCTAAGGATCTCACAATCCAAGATACCGTTCCTTAGAAGGTGTAGATATACCGGGATAAGCTCGCGAAGGGATGCATGTTTACACAGACCCTTGGACAACTAAACAAACAATGTACAGCCGCGACAGCTGTCGCGGATAAGTTTTTGGCTATTAGGCACCGATCTAAGAATAGCCGTTAGGTATACCCACACCGCAGCATGACTAATGCTAATCATCAA',
@@ -111,8 +108,7 @@ class ReferenceDatabase {
       id: 'REF011',
       scientificName: 'Felis catus',
       commonName: 'Cat',
-      lineage:
-          'Eukaryota;Animalia;Chordata;Mammalia;Carnivora;Felidae;Felis;Felis catus',
+      lineage: 'Eukaryota;Animalia;Chordata;Mammalia;Carnivora;Felidae;Felis;Felis catus',
       markerGene: 'COI (mtDNA)',
       sequence:
           'TCCTGCCAGAGTCTCCATTCATATTTTATCATAGGGTAGACTTTACTGTCAGTTTTTTTAGAATGCGGAGACTAGCTATACACCAGGCGTACTTTTGATCCAAATAGCACTCCTCTGTAGTCAGTTCTTTCTAACGGTTTCGTAGCCTTGTGACCCCTAGGCATAAGGCAGATAGTTAAGTACTTAACGGTACATGGAGC',
@@ -121,8 +117,7 @@ class ReferenceDatabase {
       id: 'REF012',
       scientificName: 'Gallus gallus',
       commonName: 'Chicken',
-      lineage:
-          'Eukaryota;Animalia;Chordata;Aves;Galliformes;Phasianidae;Gallus;Gallus gallus',
+      lineage: 'Eukaryota;Animalia;Chordata;Aves;Galliformes;Phasianidae;Gallus;Gallus gallus',
       markerGene: 'COI (mtDNA)',
       sequence:
           'CGTGCACCTCTGCCCCAGGGGCAGTCCGACGACACGCTCCCGCACATTTGTATACGCGACTGAGGTACCTGTTTCTAATATTGCCCGCCATCCTGGGGCAAAGTTGTGCATCGGACTGTCGCGGCGTGACGTGGCTTGCAGATGGACGATAAGCCGGGGAACCTTAACAGCACGGAACGTTACCTTACCTCCAAATTACTTGTACGTCGATGCCCTCGTT',
@@ -151,8 +146,7 @@ class ReferenceDatabase {
       id: 'REF015',
       scientificName: 'Apis mellifera',
       commonName: 'Honey bee',
-      lineage:
-          'Eukaryota;Animalia;Arthropoda;Insecta;Hymenoptera;Apidae;Apis;Apis mellifera',
+      lineage: 'Eukaryota;Animalia;Arthropoda;Insecta;Hymenoptera;Apidae;Apis;Apis mellifera',
       markerGene: 'COI (mtDNA)',
       sequence:
           'AGTACTTAAGCATAAGTCGCTCATCAGTAATCATCGACAGGGTTTAGTCCGGTGTGCCAAGTTATGCCTAGGCATTTCGGATCTTGAATGACAGGGTTTATGAGGGTGCTAAAACGACTTTTTCTGGCTCCAGAGAAGCCATATATTCGCTGCCGTTTCCTCAAGATATTCGGACGTGTG',
@@ -161,8 +155,7 @@ class ReferenceDatabase {
       id: 'REF016',
       scientificName: 'Bos taurus',
       commonName: 'Cattle',
-      lineage:
-          'Eukaryota;Animalia;Chordata;Mammalia;Artiodactyla;Bovidae;Bos;Bos taurus',
+      lineage: 'Eukaryota;Animalia;Chordata;Mammalia;Artiodactyla;Bovidae;Bos;Bos taurus',
       markerGene: 'COI (mtDNA)',
       sequence:
           'TTCGTAGAACAATTCTGCTCATAATGACCCCTTAATGTACTAGAATATTCGCGGAATGCGGAAATTCTCACCCTTAATATAATATCTATCAAATGAAATATTCAACGTGATGCCTCGTGTCGCTAGATTTACCATAATCTTTTATTCCATAACATCAAAAAAGAATCAAAGTACGTACCCACAGCACGCTGGTATTCCTA',
@@ -191,8 +184,7 @@ class ReferenceDatabase {
       id: 'REF019',
       scientificName: 'Oryza sativa',
       commonName: 'Rice',
-      lineage:
-          'Eukaryota;Plantae;Streptophyta;Liliopsida;Poales;Poaceae;Oryza;Oryza sativa',
+      lineage: 'Eukaryota;Plantae;Streptophyta;Liliopsida;Poales;Poaceae;Oryza;Oryza sativa',
       markerGene: 'rbcL',
       sequence:
           'TGACCCCTAATAGATCAAACAGGTTACGCAAATCAATTAAGTGCAATGGCAGTAGCAGGGCGTCTTGGATAGACCCTCTGTTTGAGAGAGGGGAAAGCCGACCAAATGCCTCCAATAATCCCGAGTCGCCGTACGTTAACAGTAGTATGACAGGCGGCGCTAAATGAACTATTGGATTCGGGGATATAAAAACGCCTAAACGCAGCTACGCAGTCAGGGTCGATCGCTACTCTTATTATCTCCAGTAATCATATGGTTAA',
@@ -201,8 +193,7 @@ class ReferenceDatabase {
       id: 'REF020',
       scientificName: 'Zea mays',
       commonName: 'Maize',
-      lineage:
-          'Eukaryota;Plantae;Streptophyta;Liliopsida;Poales;Poaceae;Zea;Zea mays',
+      lineage: 'Eukaryota;Plantae;Streptophyta;Liliopsida;Poales;Poaceae;Zea;Zea mays',
       markerGene: 'rbcL',
       sequence:
           'TGCTCGAATTACAACTAGCTAACTTTTCGTCTCTGTCGAACGCTGCCAATGGTCCCACATTCAGATTGCTCTACTTCCGCTATGAGCGCAGCGTGCACACATCAGACGCATCCCGACCCAAAGGTCCACAGGGAGTAATAACAGAAAACCACGACTGCTGGCCACACCCGCAAGTCCGAC',
@@ -331,8 +322,7 @@ class ReferenceDatabase {
       id: 'REF033',
       scientificName: 'Xenopus laevis',
       commonName: 'African clawed frog',
-      lineage:
-          'Eukaryota;Animalia;Chordata;Amphibia;Anura;Pipidae;Xenopus;Xenopus laevis',
+      lineage: 'Eukaryota;Animalia;Chordata;Amphibia;Anura;Pipidae;Xenopus;Xenopus laevis',
       markerGene: 'COI (mtDNA)',
       sequence:
           'CGGCCAGGAGTAGTCCAAGCCCATTATAGTGCACGCCGGCTCCATGCATCTCCGGGACTTATTCCAGCCCTTGGTTCACCTCCCCTCGCCCAGCGAAATGCGATACTGTTAGCGAAATCGACCCATTGTGTGGCGATGAATGCGCTGCAAGAAACTAGTACCTTAAGTCTAGAATGTAGAGTCCTAGCGTGGCGAATCTCCGTTTAAGGTTATTCGGGTGGTGACGGAACTTATGCATCG',

@@ -91,10 +91,7 @@ class SequenceEngine {
   }
 
   /// Parses a multi-FASTA text block into BioSequence list.
-  static List<BioSequence> parseFasta(
-    String content, {
-    String source = 'upload',
-  }) {
+  static List<BioSequence> parseFasta(String content, {String source = 'upload'}) {
     final List<BioSequence> results = [];
     final lines = content.split(RegExp(r'\r?\n'));
     String? currentHeader;
@@ -134,25 +131,16 @@ class SequenceEngine {
   }
 
   /// Parses FASTQ (4-line records) content into BioSequence list with quality scores.
-  static List<BioSequence> parseFastq(
-    String content, {
-    String source = 'upload',
-  }) {
+  static List<BioSequence> parseFastq(String content, {String source = 'upload'}) {
     final List<BioSequence> results = [];
-    final lines = content
-        .split(RegExp(r'\r?\n'))
-        .where((l) => l.isNotEmpty)
-        .toList();
+    final lines = content.split(RegExp(r'\r?\n')).where((l) => l.isNotEmpty).toList();
     for (int i = 0; i + 3 < lines.length; i += 4) {
       final header = lines[i];
       if (!header.startsWith('@')) continue;
       final seqLine = lines[i + 1].trim();
       final qualLine = lines[i + 3].trim();
       final seq = sanitize(seqLine);
-      final quality = qualLine
-          .split('')
-          .map((c) => c.codeUnitAt(0) - 33)
-          .toList();
+      final quality = qualLine.split('').map((c) => c.codeUnitAt(0) - 33).toList();
       final name = header.substring(1).split(RegExp(r'\s+')).first;
       results.add(
         BioSequence(
@@ -168,10 +156,7 @@ class SequenceEngine {
   }
 
   /// Auto-detect format (FASTA vs FASTQ) and parse.
-  static List<BioSequence> parseAuto(
-    String content, {
-    String source = 'upload',
-  }) {
+  static List<BioSequence> parseAuto(String content, {String source = 'upload'}) {
     final trimmed = content.trimLeft();
     if (trimmed.startsWith('@')) {
       final result = parseFastq(content, source: source);
@@ -202,10 +187,7 @@ class SequenceEngine {
 
   static double atContent(String seq) {
     if (seq.isEmpty) return 0;
-    final at = seq
-        .split('')
-        .where((c) => c == 'A' || c == 'T' || c == 'U')
-        .length;
+    final at = seq.split('').where((c) => c == 'A' || c == 'T' || c == 'U').length;
     return at / seq.length * 100;
   }
 

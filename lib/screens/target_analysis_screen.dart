@@ -56,8 +56,7 @@ class _TargetAnalysisScreenState extends State<TargetAnalysisScreen> {
     } else {
       final dna = seq.sequence.toUpperCase().replaceAll('U', 'T');
       protein = _bestOrfProtein(dna);
-      note =
-          'Auto-translated from the longest detected ORF before target analysis.';
+      note = 'Auto-translated from the longest detected ORF before target analysis.';
     }
     setState(() {
       _result = TargetAnalysisEngine.analyze(protein);
@@ -81,16 +80,10 @@ class _TargetAnalysisScreenState extends State<TargetAnalysisScreen> {
               : [
                   ['Start', 'End', 'Mean hydrophobicity'],
                   ...r.transmembraneRegions.map(
-                    (t) => [
-                      '${t.start + 1}',
-                      '${t.end}',
-                      t.meanHydrophobicity.toStringAsFixed(2),
-                    ],
+                    (t) => ['${t.start + 1}', '${t.end}', t.meanHydrophobicity.toStringAsFixed(2)],
                   ),
                 ],
-          bodyText: r.transmembraneRegions.isEmpty
-              ? 'No transmembrane segments predicted.'
-              : null,
+          bodyText: r.transmembraneRegions.isEmpty ? 'No transmembrane segments predicted.' : null,
         ),
         ReportSection(
           title: 'Candidate Linear Epitopes (Parker hydrophilicity)',
@@ -123,19 +116,14 @@ class _TargetAnalysisScreenState extends State<TargetAnalysisScreen> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final selectedSeq = _selectedId != null
-        ? appState.getSequenceById(_selectedId!)
-        : null;
+    final selectedSeq = _selectedId != null ? appState.getSequenceById(_selectedId!) : null;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Therapeutic & Vaccine Targets'),
         actions: [
           if (_result != null)
-            ExportMenuButton(
-              reportBuilder: _buildReport,
-              moduleType: 'Target Analysis',
-            ),
+            ExportMenuButton(reportBuilder: _buildReport, moduleType: 'Target Analysis'),
           const SizedBox(width: 8),
         ],
       ),
@@ -147,18 +135,12 @@ class _TargetAnalysisScreenState extends State<TargetAnalysisScreen> {
             decoration: BoxDecoration(
               color: AppColors.gradTargets.first.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.gradTargets.first.withValues(alpha: 0.25),
-              ),
+              border: Border.all(color: AppColors.gradTargets.first.withValues(alpha: 0.25)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 18,
-                  color: AppColors.gradTargets.first,
-                ),
+                Icon(Icons.info_outline, size: 18, color: AppColors.gradTargets.first),
                 const SizedBox(width: 10),
                 const Expanded(
                   child: Text(
@@ -192,8 +174,7 @@ class _TargetAnalysisScreenState extends State<TargetAnalysisScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          if (_result != null)
-            _TargetResultView(result: _result!, note: _note ?? ''),
+          if (_result != null) _TargetResultView(result: _result!, note: _note ?? ''),
         ],
       ),
     );
@@ -214,10 +195,7 @@ class _TargetResultView extends StatelessWidget {
         if (note.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
-            child: Text(
-              note,
-              style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
-            ),
+            child: Text(note, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
           ),
         Card(
           child: Padding(
@@ -243,23 +221,13 @@ class _TargetResultView extends StatelessWidget {
                             gridData: const FlGridData(show: false),
                             borderData: FlBorderData(show: false),
                             titlesData: const FlTitlesData(
-                              topTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: false),
-                              ),
-                              rightTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: false),
-                              ),
+                              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                               leftTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  reservedSize: 34,
-                                ),
+                                sideTitles: SideTitles(showTitles: true, reservedSize: 34),
                               ),
                               bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  reservedSize: 22,
-                                ),
+                                sideTitles: SideTitles(showTitles: true, reservedSize: 22),
                               ),
                             ),
                             lineBarsData: [
@@ -274,9 +242,7 @@ class _TargetResultView extends StatelessWidget {
                                 dotData: const FlDotData(show: false),
                                 belowBarData: BarAreaData(
                                   show: true,
-                                  color: AppColors.gradTargets.first.withValues(
-                                    alpha: 0.15,
-                                  ),
+                                  color: AppColors.gradTargets.first.withValues(alpha: 0.15),
                                 ),
                               ),
                             ],
@@ -302,10 +268,7 @@ class _TargetResultView extends StatelessWidget {
                 if (result.transmembraneRegions.isEmpty)
                   const Text(
                     'None predicted — likely a soluble / non-membrane protein.',
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      color: AppColors.textMuted,
-                    ),
+                    style: TextStyle(fontSize: 12.5, color: AppColors.textMuted),
                   )
                 else
                   ...result.transmembraneRegions.map(
@@ -314,29 +277,20 @@ class _TargetResultView extends StatelessWidget {
                       child: Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
                               color: AppColors.warning.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               'pos ${t.start + 1}-${t.end}',
-                              style: const TextStyle(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600),
                             ),
                           ),
                           const SizedBox(width: 10),
                           Text(
                             'mean hydrophobicity ${t.meanHydrophobicity.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textMuted,
-                            ),
+                            style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
                           ),
                         ],
                       ),
@@ -365,10 +319,7 @@ class _TargetResultView extends StatelessWidget {
                 if (result.vaccineTargetCandidates.isEmpty)
                   const Text(
                     'No strong candidates found with current heuristic thresholds.',
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      color: AppColors.textMuted,
-                    ),
+                    style: TextStyle(fontSize: 12.5, color: AppColors.textMuted),
                   )
                 else
                   ...result.vaccineTargetCandidates.map(
@@ -378,9 +329,7 @@ class _TargetResultView extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: AppColors.success.withValues(alpha: 0.06),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: AppColors.success.withValues(alpha: 0.25),
-                        ),
+                        border: Border.all(color: AppColors.success.withValues(alpha: 0.25)),
                       ),
                       child: Row(
                         children: [
@@ -398,19 +347,13 @@ class _TargetResultView extends StatelessWidget {
                                 ),
                                 Text(
                                   'Position ${e.start + 1}-${e.end}',
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    color: AppColors.textMuted,
-                                  ),
+                                  style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
                                 ),
                               ],
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                             decoration: BoxDecoration(
                               color: AppColors.success.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(20),
@@ -439,20 +382,12 @@ class _TargetResultView extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
-                  Icons.warning_amber_rounded,
-                  size: 18,
-                  color: AppColors.warning,
-                ),
+                const Icon(Icons.warning_amber_rounded, size: 18, color: AppColors.warning),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     result.disclaimer,
-                    style: const TextStyle(
-                      fontSize: 11.5,
-                      color: AppColors.textMuted,
-                      height: 1.4,
-                    ),
+                    style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted, height: 1.4),
                   ),
                 ),
               ],

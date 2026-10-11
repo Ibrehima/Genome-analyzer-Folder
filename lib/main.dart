@@ -20,9 +20,7 @@ class GenomeAnalyzerApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()..loadFromDisk()),
-        ChangeNotifierProvider(
-          create: (_) => ConnectivityService()..startPeriodicChecks(),
-        ),
+        ChangeNotifierProvider(create: (_) => ConnectivityService()..startPeriodicChecks()),
       ],
       child: MaterialApp(
         title: 'Genome Analyzer',

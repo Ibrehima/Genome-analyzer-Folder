@@ -85,9 +85,7 @@ class _OnlineToolsHubScreenState extends State<OnlineToolsHubScreen> {
           ...categories.map(
             (cat) => _CategorySection(
               category: cat,
-              tools: OnlineToolsCatalog.tools
-                  .where((t) => t.category == cat)
-                  .toList(),
+              tools: OnlineToolsCatalog.tools.where((t) => t.category == cat).toList(),
               onOpen: _openTool,
             ),
           ),
@@ -101,11 +99,7 @@ class _CategorySection extends StatelessWidget {
   final String category;
   final List<OnlineTool> tools;
   final void Function(OnlineTool) onOpen;
-  const _CategorySection({
-    required this.category,
-    required this.tools,
-    required this.onOpen,
-  });
+  const _CategorySection({required this.category, required this.tools, required this.onOpen});
 
   @override
   Widget build(BuildContext context) {
@@ -129,32 +123,19 @@ class _CategorySection extends StatelessWidget {
               child: ListTile(
                 title: Text(
                   tool.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13.5,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
                 ),
-                subtitle: Text(
-                  tool.description,
-                  style: const TextStyle(fontSize: 11.5),
-                ),
+                subtitle: Text(tool.description, style: const TextStyle(fontSize: 11.5)),
                 trailing: Wrap(
                   spacing: 4,
                   children: [
                     if (tool.supportsAccount)
                       const Tooltip(
                         message: 'Sign in to your own account on their site',
-                        child: Icon(
-                          Icons.person_outline,
-                          size: 18,
-                          color: AppColors.textMuted,
-                        ),
+                        child: Icon(Icons.person_outline, size: 18, color: AppColors.textMuted),
                       ),
                     IconButton(
-                      icon: const Icon(
-                        Icons.open_in_new,
-                        color: AppColors.primaryBlue,
-                      ),
+                      icon: const Icon(Icons.open_in_new, color: AppColors.primaryBlue),
                       onPressed: () => onOpen(tool),
                     ),
                   ],
@@ -195,10 +176,7 @@ class _LiveQueryPanelState extends State<_LiveQueryPanel> {
             ? null
             : 'Scientific name: ${r['scientificName']}\nRank: ${r['rank']}\nKingdom: ${r['kingdom']}\nConfidence: ${r['confidence']}';
       } else if (_source == 'UniProt') {
-        final r = await OnlineApiService.uniprotSearch(
-          _ctrl.text.trim(),
-          size: 3,
-        );
+        final r = await OnlineApiService.uniprotSearch(_ctrl.text.trim(), size: 3);
         _result = r == null || r.isEmpty
             ? null
             : r

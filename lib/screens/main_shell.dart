@@ -50,12 +50,7 @@ class _MainShellState extends State<MainShell> {
               currentIndex: _index,
               onTap: (i) => setState(() => _index = i),
               items: _destinations
-                  .map(
-                    (d) => BottomNavigationBarItem(
-                      icon: Icon(d.icon),
-                      label: d.label,
-                    ),
-                  )
+                  .map((d) => BottomNavigationBarItem(icon: Icon(d.icon), label: d.label))
                   .toList(),
             ),
           );
@@ -85,21 +80,14 @@ class _MainShellState extends State<MainShell> {
                       ),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
-                      Icons.biotech,
-                      color: Colors.white,
-                      size: 20,
-                    ),
+                    child: const Icon(Icons.biotech, color: Colors.white, size: 20),
                   ),
                 ),
                 destinations: _destinations
                     .map(
                       (d) => NavigationRailDestination(
                         icon: Icon(d.icon),
-                        selectedIcon: Icon(
-                          d.icon,
-                          color: AppColors.primaryBlue,
-                        ),
+                        selectedIcon: Icon(d.icon, color: AppColors.primaryBlue),
                         label: Text(d.label),
                       ),
                     )

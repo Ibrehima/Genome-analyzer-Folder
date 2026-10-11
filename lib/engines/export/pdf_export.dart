@@ -15,9 +15,7 @@ class PdfExportEngine {
         header: (context) => pw.Container(
           padding: const pw.EdgeInsets.only(bottom: 8),
           decoration: const pw.BoxDecoration(
-            border: pw.Border(
-              bottom: pw.BorderSide(color: PdfColors.teal, width: 1.5),
-            ),
+            border: pw.Border(bottom: pw.BorderSide(color: PdfColors.teal, width: 1.5)),
           ),
           child: pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -26,13 +24,7 @@ class PdfExportEngine {
                 'Genome Analyzer',
                 style: pw.TextStyle(fontSize: 10, color: PdfColors.teal700),
               ),
-              pw.Text(
-                dateStr,
-                style: const pw.TextStyle(
-                  fontSize: 9,
-                  color: PdfColors.grey600,
-                ),
-              ),
+              pw.Text(dateStr, style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600)),
             ],
           ),
         ),
@@ -59,10 +51,7 @@ class PdfExportEngine {
               padding: const pw.EdgeInsets.only(top: 4),
               child: pw.Text(
                 data.subtitle,
-                style: const pw.TextStyle(
-                  fontSize: 12,
-                  color: PdfColors.grey700,
-                ),
+                style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
               ),
             ),
           pw.SizedBox(height: 16),
@@ -92,12 +81,7 @@ class PdfExportEngine {
       );
     }
     if (s.bodyText != null && s.bodyText!.isNotEmpty) {
-      widgets.add(
-        pw.Text(
-          s.bodyText!,
-          style: const pw.TextStyle(fontSize: 10.5, lineSpacing: 2),
-        ),
-      );
+      widgets.add(pw.Text(s.bodyText!, style: const pw.TextStyle(fontSize: 10.5, lineSpacing: 2)));
     }
     if (s.bullets != null && s.bullets!.isNotEmpty) {
       widgets.add(
@@ -112,16 +96,8 @@ class PdfExportEngine {
                     child: pw.Row(
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
-                        pw.Text(
-                          '•  ',
-                          style: const pw.TextStyle(fontSize: 10.5),
-                        ),
-                        pw.Expanded(
-                          child: pw.Text(
-                            b,
-                            style: const pw.TextStyle(fontSize: 10.5),
-                          ),
-                        ),
+                        pw.Text('•  ', style: const pw.TextStyle(fontSize: 10.5)),
+                        pw.Expanded(child: pw.Text(b, style: const pw.TextStyle(fontSize: 10.5))),
                       ],
                     ),
                   ),
@@ -138,15 +114,12 @@ class PdfExportEngine {
           child: pw.Table(
             border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
             columnWidths: {
-              for (int i = 0; i < s.table!.first.length; i++)
-                i: const pw.FlexColumnWidth(),
+              for (int i = 0; i < s.table!.first.length; i++) i: const pw.FlexColumnWidth(),
             },
             children: [
               for (int r = 0; r < s.table!.length; r++)
                 pw.TableRow(
-                  decoration: r == 0
-                      ? const pw.BoxDecoration(color: PdfColors.teal50)
-                      : null,
+                  decoration: r == 0 ? const pw.BoxDecoration(color: PdfColors.teal50) : null,
                   children: [
                     for (final cell in s.table![r])
                       pw.Padding(
@@ -155,9 +128,7 @@ class PdfExportEngine {
                           cell,
                           style: pw.TextStyle(
                             fontSize: 9,
-                            fontWeight: r == 0
-                                ? pw.FontWeight.bold
-                                : pw.FontWeight.normal,
+                            fontWeight: r == 0 ? pw.FontWeight.bold : pw.FontWeight.normal,
                           ),
                         ),
                       ),

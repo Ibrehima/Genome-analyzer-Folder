@@ -95,9 +95,7 @@ class _ExportMenuButtonState extends State<ExportMenuButton> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'Exported "${data.title}" as ${_formatLabel(format)}',
-            ),
+            content: Text('Exported "${data.title}" as ${_formatLabel(format)}'),
             backgroundColor: const Color(0xFF2E7D32),
           ),
         );
@@ -105,10 +103,7 @@ class _ExportMenuButtonState extends State<ExportMenuButton> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Export failed: $e'),
-            backgroundColor: const Color(0xFFC62828),
-          ),
+          SnackBar(content: Text('Export failed: $e'), backgroundColor: const Color(0xFFC62828)),
         );
       }
     } finally {
@@ -121,11 +116,7 @@ class _ExportMenuButtonState extends State<ExportMenuButton> {
     if (_exporting) {
       return const Padding(
         padding: EdgeInsets.all(8),
-        child: SizedBox(
-          width: 20,
-          height: 20,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
+        child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
       );
     }
     return PopupMenuButton<ExportFormat>(
@@ -158,10 +149,7 @@ class _ExportMenuButtonState extends State<ExportMenuButton> {
             SizedBox(width: 6),
             Text(
               'Export',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
             ),
           ],
         ),

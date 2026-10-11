@@ -81,10 +81,7 @@ class ModuleCard extends StatelessWidget {
               const SizedBox(height: 3),
               Text(
                 subtitle,
-                style: TextStyle(
-                  fontSize: subtitleFontSize,
-                  color: const Color(0xFF64748B),
-                ),
+                style: TextStyle(fontSize: subtitleFontSize, color: const Color(0xFF64748B)),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),

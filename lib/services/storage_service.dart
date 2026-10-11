@@ -10,13 +10,42 @@ import '../models/analysis_models.dart';
 class StorageService {
   static const String _sequenceBoxName = 'sequences_box';
   static const String _annotationBoxName = 'annotations_box';
+  static const String _projectBoxName = 'projects_box';
   static Box? _sequenceBox;
   static Box? _annotationBox;
+  static Box? _projectBox;
 
   static Future<void> init() async {
     await Hive.initFlutter();
     _sequenceBox = await Hive.openBox(_sequenceBoxName);
     _annotationBox = await Hive.openBox(_annotationBoxName);
+    _projectBox = await Hive.openBox(_projectBoxName);
+  }
+
+  // ---------------- Projects ----------------
+  static Future<void> saveProject(Project p) async {
+    await _projectBox?.put(p.id, p.toJson());
+  }
+
+  static Future<void> deleteProject(String id) async {
+    await _projectBox?.delete(id);
+  }
+
+  static List<Project> loadAllProjects() {
+    if (_projectBox == null) return [];
+    final List<Project> result = [];
+    for (final key in _projectBox!.keys) {
+      final raw = _projectBox!.get(key);
+      if (raw is Map) {
+        try {
+          result.add(Project.fromJson(Map<String, dynamic>.from(raw)));
+        } catch (_) {
+          // skip corrupted entry
+        }
+      }
+    }
+    result.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    return result;
   }
 
   // ---------------- Sequence Annotations ----------------
@@ -35,9 +64,7 @@ class StorageService {
       final raw = _annotationBox!.get(key);
       if (raw is Map) {
         try {
-          result.add(
-            SequenceAnnotation.fromJson(Map<String, dynamic>.from(raw)),
-          );
+          result.add(SequenceAnnotation.fromJson(Map<String, dynamic>.from(raw)));
         } catch (_) {
           // skip corrupted entry
         }
@@ -85,9 +112,7 @@ class StorageService {
     return raw
         .map((s) {
           try {
-            return ReportHistoryItem.fromJson(
-              jsonDecode(s) as Map<String, dynamic>,
-            );
+            return ReportHistoryItem.fromJson(jsonDecode(s) as Map<String, dynamic>);
           } catch (_) {
             return null;
           }
