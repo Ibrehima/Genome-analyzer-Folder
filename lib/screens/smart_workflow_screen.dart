@@ -393,9 +393,45 @@ class _SmartWorkflowScreenState extends State<SmartWorkflowScreen> {
             label: 'Select the sequence to analyze',
           ),
           const SizedBox(height: 20),
-          const Text(
-            'What would you like to do?',
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5),
+          Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  'What would you like to do?',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: _running
+                    ? null
+                    : () => setState(() {
+                        if (_selectedTaskIds.length == _availableTasks.length) {
+                          _selectedTaskIds.clear();
+                        } else {
+                          _selectedTaskIds
+                            ..clear()
+                            ..addAll(_availableTasks.map((t) => t.id));
+                        }
+                      }),
+                icon: Icon(
+                  _selectedTaskIds.length == _availableTasks.length
+                      ? Icons.deselect_rounded
+                      : Icons.select_all_rounded,
+                  size: 16,
+                ),
+                label: Text(
+                  _selectedTaskIds.length == _availableTasks.length
+                      ? 'Deselect all'
+                      : 'Select all',
+                ),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10),
           ..._availableTasks.map(

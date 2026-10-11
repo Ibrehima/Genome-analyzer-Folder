@@ -47,16 +47,40 @@ class SequenceSelector extends StatelessWidget {
       );
     }
 
+    final allIds = sequences.map((s) => s.id).toList();
+    final allSelected = allIds.isNotEmpty && allIds.every(selectedIds.contains);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF64748B),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF64748B),
+                ),
+              ),
+            ),
+            if (multiple && sequences.length > 1)
+              TextButton.icon(
+                onPressed: () => onChanged(allSelected ? [] : allIds),
+                icon: Icon(
+                  allSelected ? Icons.deselect_rounded : Icons.select_all_rounded,
+                  size: 16,
+                ),
+                label: Text(allSelected ? 'Deselect all' : 'Select all'),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 8),
         ...sequences.map((seq) {
