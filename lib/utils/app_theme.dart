@@ -34,6 +34,8 @@ class AppColors {
   static const List<Color> gradAssembly = [Color(0xFF1A237E), Color(0xFF7986CB)];
   static const List<Color> gradMutation = [Color(0xFFB71C1C), Color(0xFFEF9A9A)];
   static const List<Color> gradGenomeMap = [Color(0xFF004D40), Color(0xFF26A69A)];
+  static const List<Color> gradAdmin = [Color(0xFF6A1B9A), Color(0xFFAB47BC)];
+  static const List<Color> gradAuth = [Color(0xFF1565C0), Color(0xFF26C6DA)];
 
   static const Color success = Color(0xFF2E7D32);
   static const Color warning = Color(0xFFF9A825);

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
+import '../services/auth_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/module_card.dart';
 import '../widgets/connectivity_badge.dart';
+import 'admin/admin_dashboard_screen.dart';
 import 'sequence_library_screen.dart';
 import 'primer_design_screen.dart';
 import 'alignment_screen.dart';
@@ -269,13 +271,42 @@ class HomeScreen extends StatelessWidget {
     'Insights & Resources',
   ];
 
+  Future<void> _confirmLogout(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Se déconnecter'),
+        content: const Text('Voulez-vous vraiment vous déconnecter de Genome Analyzer ?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Déconnexion')),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      await context.read<AuthService>().logout();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
+    final auth = context.watch<AuthService>();
     final seqCount = appState.sequencesInActiveProject.length;
     final reportCount = appState.reportHistory.length;
     final density = _densityPresets[appState.iconDensity] ?? _densityPresets['comfortable']!;
     final sections = _sections(context);
+    if (auth.isSuperAdmin) {
+      sections.last.add(
+        _ModuleEntry(
+          title: 'Admin Dashboard',
+          subtitle: 'Statistiques & activités de tous les utilisateurs',
+          icon: Icons.admin_panel_settings_rounded,
+          gradient: AppColors.gradAdmin,
+          builder: (_) => const AdminDashboardScreen(),
+        ),
+      );
+    }
 
     return Scaffold(
       body: SafeArea(
@@ -286,10 +317,12 @@ class HomeScreen extends StatelessWidget {
                 seqCount: seqCount,
                 reportCount: reportCount,
                 projectName: appState.activeProject.name,
+                userEmail: auth.currentUser?.email,
                 onProjectTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ProjectsScreen()),
                 ),
+                onLogout: () => _confirmLogout(context),
               ),
             ),
             SliverPadding(
@@ -371,10 +404,16 @@ class HomeScreen extends StatelessWidget {
                                         titleFontSize: density.titleFontSize,
                                         subtitleFontSize: density.subtitleFontSize,
                                         padding: density.padding,
-                                        onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: m.builder),
-                                        ),
+                                        onTap: () {
+                                          context.read<AuthService>().logActivity(
+                                            module: m.title,
+                                            action: 'Ouverture du module',
+                                          );
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: m.builder),
+                                          );
+                                        },
                                       ),
                                     )
                                     .toList(),
@@ -463,12 +502,16 @@ class _HeroHeader extends StatelessWidget {
   final int seqCount;
   final int reportCount;
   final String projectName;
+  final String? userEmail;
   final VoidCallback onProjectTap;
+  final VoidCallback onLogout;
   const _HeroHeader({
     required this.seqCount,
     required this.reportCount,
     required this.projectName,
+    required this.userEmail,
     required this.onProjectTap,
+    required this.onLogout,
   });
 
   @override
@@ -514,7 +557,39 @@ class _HeroHeader extends StatelessWidget {
                   ),
                 ],
               ),
-              const ConnectivityBadge(),
+              Row(
+                children: [
+                  const ConnectivityBadge(),
+                  const SizedBox(width: 6),
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.account_circle, color: Colors.white),
+                    tooltip: userEmail ?? 'Compte',
+                    onSelected: (v) {
+                      if (v == 'logout') onLogout();
+                    },
+                    itemBuilder: (ctx) => [
+                      PopupMenuItem<String>(
+                        enabled: false,
+                        child: Text(
+                          userEmail ?? '',
+                          style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      const PopupMenuDivider(),
+                      const PopupMenuItem<String>(
+                        value: 'logout',
+                        child: Row(
+                          children: [
+                            Icon(Icons.logout, size: 18, color: AppColors.danger),
+                            SizedBox(width: 8),
+                            Text('Se déconnecter'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 10),

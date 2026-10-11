@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/app_state.dart';
+import 'services/auth_service.dart';
 import 'services/connectivity_service.dart';
 import 'services/storage_service.dart';
 import 'utils/app_theme.dart';
-import 'screens/main_shell.dart';
+import 'screens/auth/auth_gate_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,12 +22,13 @@ class GenomeAnalyzerApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()..loadFromDisk()),
         ChangeNotifierProvider(create: (_) => ConnectivityService()..startPeriodicChecks()),
+        ChangeNotifierProvider(create: (_) => AuthService()..loadFromDisk()),
       ],
       child: MaterialApp(
         title: 'Genome Analyzer',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
-        home: const MainShell(),
+        home: const AuthGateScreen(),
       ),
     );
   }
