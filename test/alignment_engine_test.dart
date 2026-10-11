@@ -69,21 +69,14 @@ void main() {
       gapExtendPenalty: -1,
     );
 
-    test(
-      'global affine alignment favors one long gap over many short ones',
-      () {
-        final r = AlignmentEngine.globalAlign(
-          'ACGTACGTACGT',
-          'ACGTACGT',
-          options: affineOpts,
-        );
-        expect(r.gapModel, GapModel.affine);
-        // A single contiguous gap run should be preferred under affine
-        // penalties, i.e. gapOpenings should be low (ideally 1).
-        expect(r.gapOpenings, lessThanOrEqualTo(1));
-        expect(r.gaps, 4);
-      },
-    );
+    test('global affine alignment favors one long gap over many short ones', () {
+      final r = AlignmentEngine.globalAlign('ACGTACGTACGT', 'ACGTACGT', options: affineOpts);
+      expect(r.gapModel, GapModel.affine);
+      // A single contiguous gap run should be preferred under affine
+      // penalties, i.e. gapOpenings should be low (ideally 1).
+      expect(r.gapOpenings, lessThanOrEqualTo(1));
+      expect(r.gaps, 4);
+    });
 
     test('local affine alignment runs without throwing and finds a region', () {
       final a = _randomSeq(60, 7);
@@ -101,16 +94,11 @@ void main() {
     });
 
     test('PAM250 table is symmetric and self-consistent for a few entries', () {
-      expect(
-        SubstitutionMatrices.pam250('A', 'R'),
-        SubstitutionMatrices.pam250('R', 'A'),
-      );
+      expect(SubstitutionMatrices.pam250('A', 'R'), SubstitutionMatrices.pam250('R', 'A'));
     });
 
     test('protein alignment with BLOSUM62 produces a sane result', () {
-      const opts = AlignmentOptions(
-        matrixType: SubstitutionMatrixType.blosum62,
-      );
+      const opts = AlignmentOptions(matrixType: SubstitutionMatrixType.blosum62);
       final r = AlignmentEngine.globalAlign(
         'MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQ',
         'MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQ',
@@ -177,22 +165,15 @@ void main() {
       expect(r.averageIdentity, 100);
     });
 
-    test(
-      'center-star method aligns 3 similar sequences with high identity',
-      () {
-        const base = 'ACGTACGTACGTACGTACGT';
-        final seqs = [base, base.replaceRange(5, 6, 'T'), base];
-        final r = AlignmentEngine.multipleAlign(
-          ['a', 'b', 'c'],
-          seqs,
-          method: MsaMethod.centerStar,
-        );
-        expect(r.method, MsaMethod.centerStar);
-        expect(r.averageIdentity, greaterThan(85));
-        expect(r.alignedSequences.length, 3);
-        expect(r.consensusSequence.length, r.consensusLength);
-      },
-    );
+    test('center-star method aligns 3 similar sequences with high identity', () {
+      const base = 'ACGTACGTACGTACGTACGT';
+      final seqs = [base, base.replaceRange(5, 6, 'T'), base];
+      final r = AlignmentEngine.multipleAlign(['a', 'b', 'c'], seqs, method: MsaMethod.centerStar);
+      expect(r.method, MsaMethod.centerStar);
+      expect(r.averageIdentity, greaterThan(85));
+      expect(r.alignedSequences.length, 3);
+      expect(r.consensusSequence.length, r.consensusLength);
+    });
 
     test('guide-tree method produces column-consistent alignment of equal '
         'length rows', () {
@@ -239,11 +220,7 @@ void main() {
       final g = AlignmentEngine.align('ACGT', 'ACGT', AlignmentMode.global);
       final l = AlignmentEngine.align('ACGT', 'ACGT', AlignmentMode.local);
       final s = AlignmentEngine.align('ACGT', 'ACGT', AlignmentMode.glocal);
-      final h = AlignmentEngine.align(
-        'ACGT',
-        'ACGT',
-        AlignmentMode.heuristicSeedExtend,
-      );
+      final h = AlignmentEngine.align('ACGT', 'ACGT', AlignmentMode.heuristicSeedExtend);
       expect(g.mode, AlignmentMode.global);
       expect(l.mode, AlignmentMode.local);
       expect(s.mode, AlignmentMode.glocal);
@@ -354,11 +331,7 @@ void main() {
       ];
       final names = List.generate(6, (i) => 'seq$i');
 
-      final unrefined = AlignmentEngine.multipleAlign(
-        names,
-        seqs,
-        method: MsaMethod.guideTree,
-      );
+      final unrefined = AlignmentEngine.multipleAlign(names, seqs, method: MsaMethod.guideTree);
       final refined = AlignmentEngine.multipleAlign(
         names,
         seqs,
@@ -405,11 +378,7 @@ void main() {
       }
       final names = List.generate(10, (i) => 'seq$i');
 
-      final guide = AlignmentEngine.multipleAlign(
-        names,
-        seqs,
-        method: MsaMethod.guideTree,
-      );
+      final guide = AlignmentEngine.multipleAlign(names, seqs, method: MsaMethod.guideTree);
       final muscle = AlignmentEngine.multipleAlign(
         names,
         seqs,

@@ -44,24 +44,12 @@ void main() {
 
       // Verify F1c is indeed the reverse complement of the F1 template
       // region it was derived from (self-consistency check).
-      final f1Region = template.substring(
-        set.f1c.templateStart,
-        set.f1c.templateEnd,
-      );
-      expect(
-        set.f1c.sequence,
-        equals(SequenceEngine.reverseComplement(f1Region)),
-      );
+      final f1Region = template.substring(set.f1c.templateStart, set.f1c.templateEnd);
+      expect(set.f1c.sequence, equals(SequenceEngine.reverseComplement(f1Region)));
 
       // Verify B2 is the reverse complement of its own template region.
-      final b2Region = template.substring(
-        set.b2.templateStart,
-        set.b2.templateEnd,
-      );
-      expect(
-        set.b2.sequence,
-        equals(SequenceEngine.reverseComplement(b2Region)),
-      );
+      final b2Region = template.substring(set.b2.templateStart, set.b2.templateEnd);
+      expect(set.b2.sequence, equals(SequenceEngine.reverseComplement(b2Region)));
 
       // Score should be within 0-100.
       expect(set.score, inInclusiveRange(0, 100));

@@ -67,16 +67,27 @@ class ContigAssemblyEngine {
     return best;
   }
 
-  /// Builds a short k-mer index (end-anchored) to quickly shortlist
-  /// candidate pairs before running the expensive overlap scan — avoids a
-  /// full O(n^2 * L) scan when there are many unrelated reads.
-  static Map<String, List<int>> _buildSuffixIndex(List<String> seqs, int k) {
-    final index = <String, List<int>>{};
+  /// Builds a k-mer index mapping every k-length window across the *leading*
+  /// `maxWindow` bases of each sequence to the sequences containing it.
+  ///
+  /// This is used to shortlist merge candidates for a read `a`'s trailing
+  /// k-mer seed: if `a` overlaps `b`'s prefix by some length `L >= k`, then
+  /// `a`'s last k bases must appear in `b` starting at position `L - k`
+  /// (i.e. somewhere within `b`'s first `maxWindow` bases, not necessarily
+  /// at position 0) — so the index must cover every window start, not just
+  /// the sequence's literal prefix, or legitimate longer overlaps would
+  /// never be found. The expensive, exact verification still happens
+  /// afterwards in [_bestOverlap]; this index only shortlists candidates.
+  static Map<String, Set<int>> _buildKmerWindowIndex(List<String> seqs, int k, int maxWindow) {
+    final index = <String, Set<int>>{};
     for (int i = 0; i < seqs.length; i++) {
       final s = seqs[i];
       if (s.length < k) continue;
-      final tail = s.substring(s.length - k);
-      index.putIfAbsent(tail, () => []).add(i);
+      final limit = min(maxWindow, s.length) - k;
+      for (int p = 0; p <= limit; p++) {
+        final window = s.substring(p, p + k);
+        index.putIfAbsent(window, () => <int>{}).add(i);
+      }
     }
     return index;
   }
@@ -119,7 +130,18 @@ class ContigAssemblyEngine {
     while (mergedAny && mergeRounds < maxRounds) {
       mergedAny = false;
       mergeRounds++;
-      final index = _buildSuffixIndex(working, k);
+      // How far into each candidate's prefix a k-mer window needs indexing:
+      // generously covers any overlap length up to the longest read, since
+      // the matching k-mer sits at position (overlapLen - k) in the prefix.
+      final maxLen = working.fold<int>(0, (m, s) => s.length > m ? s.length : m);
+      // Direct-orientation candidates: some window in b's prefix must match
+      // a's trailing k-mer.
+      final prefixIndex = _buildKmerWindowIndex(working, k, maxLen);
+      // Reverse-complement candidates: same, but against revComp(b) —
+      // precompute revComp(b) once per read per round rather than inside
+      // the inner loop.
+      final revComps = List<String>.generate(working.length, (j) => _revComp(working[j]));
+      final rcPrefixIndex = _buildKmerWindowIndex(revComps, k, maxLen);
 
       double bestScore = -1;
       int bestI = -1, bestJ = -1;
@@ -132,8 +154,8 @@ class ContigAssemblyEngine {
         final a = working[i];
         if (a.length < k) continue;
         final seed = a.substring(a.length - k);
-        final candidates = index[seed] ?? const [];
-        for (final j in candidates) {
+
+        for (final j in prefixIndex[seed] ?? const <int>{}) {
           if (j == i || !alive[j]) continue;
           final b = working[j];
           final ov = _bestOverlap(a, b, minOverlap: minOverlap, minIdentity: minIdentity);
@@ -148,9 +170,14 @@ class ContigAssemblyEngine {
               bestIdentity = ov.identity;
             }
           }
-          // Also try b's reverse complement as a potential forward-read
-          // continuation (captures reads sequenced from the other strand).
-          final bRc = _revComp(b);
+        }
+
+        // Also try each candidate's reverse complement as a potential
+        // forward-read continuation (captures reads sequenced from the
+        // other strand), shortlisted via the revComp k-mer window index.
+        for (final j in rcPrefixIndex[seed] ?? const <int>{}) {
+          if (j == i || !alive[j]) continue;
+          final bRc = revComps[j];
           final ovRc = _bestOverlap(a, bRc, minOverlap: minOverlap, minIdentity: minIdentity);
           if (ovRc != null) {
             final score = ovRc.overlapLen * (ovRc.identity / 100);
