@@ -8,6 +8,22 @@ class ReportSection {
   final List<List<String>>? table; // first row = header
 
   ReportSection({this.title = '', this.bodyText, this.bullets, this.table});
+
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'bodyText': bodyText,
+    'bullets': bullets,
+    'table': table,
+  };
+
+  factory ReportSection.fromJson(Map<String, dynamic> json) => ReportSection(
+    title: json['title'] as String? ?? '',
+    bodyText: json['bodyText'] as String?,
+    bullets: (json['bullets'] as List?)?.map((e) => e.toString()).toList(),
+    table: (json['table'] as List?)
+        ?.map((row) => (row as List).map((c) => c.toString()).toList())
+        .toList(),
+  );
 }
 
 class ReportData {
@@ -23,4 +39,22 @@ class ReportData {
     List<ReportSection>? sections,
   }) : generatedAt = generatedAt ?? DateTime.now(),
        sections = sections ?? [];
+
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'subtitle': subtitle,
+    'generatedAt': generatedAt.toIso8601String(),
+    'sections': sections.map((s) => s.toJson()).toList(),
+  };
+
+  factory ReportData.fromJson(Map<String, dynamic> json) => ReportData(
+    title: json['title'] as String? ?? '',
+    subtitle: json['subtitle'] as String? ?? '',
+    generatedAt: json['generatedAt'] != null
+        ? (DateTime.tryParse(json['generatedAt'] as String) ?? DateTime.now())
+        : DateTime.now(),
+    sections: (json['sections'] as List? ?? [])
+        .map((e) => ReportSection.fromJson(Map<String, dynamic>.from(e as Map)))
+        .toList(),
+  );
 }

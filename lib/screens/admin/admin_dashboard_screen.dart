@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../models/activity_log.dart';
 import '../../models/user_account.dart';
+import '../../models/workflow_result.dart';
 import '../../services/auth_service.dart';
+import '../../services/storage_service.dart';
 import '../../utils/app_theme.dart';
 
 /// Super-admin only dashboard: visible exclusively to the account whose
@@ -38,6 +40,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final auth = context.watch<AuthService>();
     final users = auth.allUsers;
     final activity = auth.activityLog;
+    final workflowResults = StorageService.loadAllWorkflowResults();
 
     final Map<String, int> perModule = {};
     for (final a in activity) {
@@ -119,6 +122,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   gradient: AppColors.gradStats,
                 ),
               ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _StatCard(
+                  label: 'Résultats Smart Workflow',
+                  value: '${workflowResults.length}',
+                  icon: Icons.auto_awesome,
+                  gradient: AppColors.gradAssistant,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -188,7 +200,46 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 children: activity.take(50).map((a) => _ActivityTile(entry: a)).toList(),
               ),
             ),
+          const SizedBox(height: 24),
+          const Text(
+            'Résultats Smart Workflow (tous les utilisateurs)',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5),
+          ),
+          const SizedBox(height: 10),
+          if (workflowResults.isEmpty)
+            const _EmptyHint(text: 'Aucun résultat de workflow enregistré pour le moment.')
+          else
+            Card(
+              child: Column(
+                children: workflowResults
+                    .take(50)
+                    .map((r) => _WorkflowResultTile(record: r))
+                    .toList(),
+              ),
+            ),
         ],
+      ),
+    );
+  }
+}
+
+class _WorkflowResultTile extends StatelessWidget {
+  final WorkflowResultRecord record;
+  const _WorkflowResultTile({required this.record});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      dense: true,
+      leading: const Icon(Icons.auto_awesome, size: 18, color: Color(0xFF6A1B9A)),
+      title: Text(
+        '${record.sequenceName} — ${record.taskLabels.join(", ")}',
+        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+      ),
+      subtitle: Text(record.ownerEmail, style: const TextStyle(fontSize: 11)),
+      trailing: Text(
+        DateFormat('dd/MM HH:mm').format(record.createdAt),
+        style: const TextStyle(fontSize: 10.5, color: AppColors.textMuted),
       ),
     );
   }

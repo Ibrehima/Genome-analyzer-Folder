@@ -29,6 +29,8 @@ import 'demultiplexing_screen.dart';
 import 'trimming_screen.dart';
 import 'genome_map_screen.dart';
 import 'mutation_detection_screen.dart';
+import 'smart_workflow_screen.dart';
+import 'my_results_screen.dart';
 
 /// Icon/tile density presets for the module grid — lets users on
 /// desktop/tablet screens re-size module icons as requested, persisted via
@@ -247,6 +249,20 @@ class HomeScreen extends StatelessWidget {
       ),
     ],
     [
+      _ModuleEntry(
+        title: 'Smart Workflow',
+        subtitle: 'Check what to run — sequential analysis + saved results',
+        icon: Icons.auto_awesome,
+        gradient: AppColors.gradAssistant,
+        builder: (_) => const SmartWorkflowScreen(),
+      ),
+      _ModuleEntry(
+        title: 'My Results',
+        subtitle: 'Your saved Smart Workflow outputs',
+        icon: Icons.folder_special_rounded,
+        gradient: AppColors.gradReports,
+        builder: (_) => const MyResultsScreen(),
+      ),
       _ModuleEntry(
         title: 'Statistics Lab',
         subtitle: 'Descriptive stats & diversity index',

@@ -528,6 +528,14 @@ class ReportHistoryItem {
   final DateTime createdAt;
   final String summary;
 
+  /// Owning user account (set from [AuthService.currentUser] whenever a
+  /// report/workflow result is produced) so each user only sees their own
+  /// results, while the super-admin can see every result on this
+  /// installation. Nullable for backward compatibility with entries
+  /// created before accounts existed.
+  final String? ownerId;
+  final String? ownerEmail;
+
   ReportHistoryItem({
     String? id,
     required this.title,
@@ -535,6 +543,8 @@ class ReportHistoryItem {
     required this.format,
     DateTime? createdAt,
     this.summary = '',
+    this.ownerId,
+    this.ownerEmail,
   }) : id = id ?? const Uuid().v4(),
        createdAt = createdAt ?? DateTime.now();
 
@@ -545,6 +555,8 @@ class ReportHistoryItem {
     'format': format.name,
     'createdAt': createdAt.toIso8601String(),
     'summary': summary,
+    'ownerId': ownerId,
+    'ownerEmail': ownerEmail,
   };
 
   factory ReportHistoryItem.fromJson(Map<String, dynamic> json) => ReportHistoryItem(
@@ -559,6 +571,8 @@ class ReportHistoryItem {
         ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
         : DateTime.now(),
     summary: json['summary'] as String? ?? '',
+    ownerId: json['ownerId'] as String?,
+    ownerEmail: json['ownerEmail'] as String?,
   );
 }
 

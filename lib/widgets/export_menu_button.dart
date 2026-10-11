@@ -4,6 +4,7 @@ import '../models/analysis_models.dart';
 import '../engines/export/report_data.dart';
 import '../engines/export/export_engine.dart';
 import '../services/app_state.dart';
+import '../services/auth_service.dart';
 
 /// Reusable export control: lets the user pick PDF / Word / PowerPoint /
 /// Excel and handles generation, saving/downloading and history logging.
@@ -83,13 +84,20 @@ class _ExportMenuButtonState extends State<ExportMenuButton> {
       final data = widget.reportBuilder();
       await ExportEngine.exportAndSave(data: data, format: format);
       if (mounted) {
+        final auth = context.read<AuthService>();
         await context.read<AppState>().recordReport(
           ReportHistoryItem(
             title: data.title,
             moduleType: widget.moduleType,
             format: format,
             summary: data.subtitle,
+            ownerId: auth.currentUser?.id,
+            ownerEmail: auth.currentUser?.email,
           ),
+        );
+        await auth.logActivity(
+          module: widget.moduleType,
+          action: 'Export du rapport (${_formatLabel(format)})',
         );
       }
       if (mounted) {

@@ -5,6 +5,7 @@ import '../engines/primer_engine.dart';
 import '../engines/lamp_primer_engine.dart';
 import '../engines/export/report_data.dart';
 import '../services/app_state.dart';
+import '../services/auth_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/sequence_selector.dart';
 import '../widgets/export_menu_button.dart';
@@ -97,6 +98,12 @@ class _PcrPrimerTabState extends State<_PcrPrimerTab> {
       _results = results;
       _running = false;
     });
+    if (mounted) {
+      await context.read<AuthService>().logActivity(
+        module: 'Primer Design',
+        action: 'PCR primer design on "${seq.name}" (${results.length} pair(s) found)',
+      );
+    }
   }
 
   ReportData _buildReport() {
@@ -390,6 +397,12 @@ class _LampPrimerTabState extends State<_LampPrimerTab> {
             'template.';
       }
     });
+    if (mounted) {
+      await context.read<AuthService>().logActivity(
+        module: 'Primer Design',
+        action: 'LAMP primer design on "${seq.name}" (${results.length} set(s) found)',
+      );
+    }
   }
 
   ReportData _buildReport() {

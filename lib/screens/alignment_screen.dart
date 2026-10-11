@@ -6,6 +6,7 @@ import '../engines/alignment_engine.dart';
 import '../engines/statistics_engine.dart';
 import '../engines/export/report_data.dart';
 import '../services/app_state.dart';
+import '../services/auth_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/sequence_selector.dart';
 import '../widgets/colored_sequence_view.dart';
@@ -96,6 +97,12 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
         _usedSeqs = seqs;
         _running = false;
       });
+      if (mounted) {
+        await context.read<AuthService>().logActivity(
+          module: 'Sequence Alignment',
+          action: 'Pairwise alignment (${_mode.shortLabel}): ${seqs[0].name} vs ${seqs[1].name}',
+        );
+      }
     } else {
       final result = AlignmentEngine.multipleAlign(
         seqs.map((s) => s.name).toList(),
@@ -110,6 +117,12 @@ class _AlignmentScreenState extends State<AlignmentScreen> {
         _usedSeqs = seqs;
         _running = false;
       });
+      if (mounted) {
+        await context.read<AuthService>().logActivity(
+          module: 'Sequence Alignment',
+          action: 'Multiple alignment (${_msaMethod.label}) of ${seqs.length} sequences',
+        );
+      }
     }
   }
 

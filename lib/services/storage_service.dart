@@ -5,6 +5,7 @@ import '../models/bio_sequence.dart';
 import '../models/analysis_models.dart';
 import '../models/user_account.dart';
 import '../models/activity_log.dart';
+import '../models/workflow_result.dart';
 
 /// Local persistence layer. Uses Hive for the sequence library (structured
 /// documents) and shared_preferences for lightweight settings & report
@@ -15,11 +16,13 @@ class StorageService {
   static const String _projectBoxName = 'projects_box';
   static const String _userBoxName = 'users_box';
   static const String _activityBoxName = 'activity_log_box';
+  static const String _workflowResultBoxName = 'workflow_results_box';
   static Box? _sequenceBox;
   static Box? _annotationBox;
   static Box? _projectBox;
   static Box? _userBox;
   static Box? _activityBox;
+  static Box? _workflowResultBox;
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -28,6 +31,7 @@ class StorageService {
     _projectBox = await Hive.openBox(_projectBoxName);
     _userBox = await Hive.openBox(_userBoxName);
     _activityBox = await Hive.openBox(_activityBoxName);
+    _workflowResultBox = await Hive.openBox(_workflowResultBoxName);
   }
 
   // ---------------- User Accounts ----------------
@@ -89,6 +93,35 @@ class StorageService {
   static Future<void> clearActivityLog() async {
     await _activityBox?.clear();
   }
+
+  // ---------------- Smart Workflow Results ----------------
+  static Future<void> saveWorkflowResult(WorkflowResultRecord r) async {
+    await _workflowResultBox?.put(r.id, r.toJson());
+  }
+
+  static Future<void> deleteWorkflowResult(String id) async {
+    await _workflowResultBox?.delete(id);
+  }
+
+  static List<WorkflowResultRecord> loadAllWorkflowResults() {
+    if (_workflowResultBox == null) return [];
+    final List<WorkflowResultRecord> result = [];
+    for (final key in _workflowResultBox!.keys) {
+      final raw = _workflowResultBox!.get(key);
+      if (raw is Map) {
+        try {
+          result.add(WorkflowResultRecord.fromJson(Map<String, dynamic>.from(raw)));
+        } catch (_) {
+          // skip corrupted entry
+        }
+      }
+    }
+    result.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return result;
+  }
+
+  static List<WorkflowResultRecord> loadWorkflowResultsForUser(String ownerId) =>
+      loadAllWorkflowResults().where((r) => r.ownerId == ownerId).toList();
 
   // ---------------- Projects ----------------
   static Future<void> saveProject(Project p) async {

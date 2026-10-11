@@ -165,6 +165,8 @@ class OnlineToolsCatalog {
       description: 'Annotate and predict the effect of genomic variants.',
       url: 'https://www.ensembl.org/Tools/VEP',
       category: 'Variants',
+      queryUrlTemplate: 'https://www.ensembl.org/{query}/Tools/VEP',
+      queryHint: 'Species (e.g. Homo_sapiens, Mus_musculus)',
     ),
     OnlineTool(
       name: 'FastQC (Babraham)',
